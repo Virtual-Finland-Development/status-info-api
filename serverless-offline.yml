@@ -1,0 +1,31 @@
+service: status-info-api-offline
+
+configValidationMode: off
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    host: 0.0.0.0
+    httpPort: 5747
+
+provider:
+  name: "offline"
+  stage: offline
+  timeout: 15
+
+functions:
+  status-info-api:
+    handler: dist/app.handler
+    events:
+      - httpApi:
+          method: any
+          path: /{proxy+}
+    environment:
+      STAGE: local
+      AWS_REGION: eu-north-1
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
+      DYNAMODB_TABLE_NAME: ${env:DYNAMODB_CACHE_TABLE_NAME, 'status-info-api-StatusTable-local'}
+      DYNAMODB_ENDPOINT: ${env:DYNAMODB_ENDPOINT, 'http://localhost:8000'}

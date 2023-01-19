@@ -1,0 +1,30 @@
+{
+  "name": "status-info-api",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "tsc",
+    "start": "nodemon --delay 80ms --watch 'src' -e 'ts'  --exec \"npm run build && npm run serve\"",
+    "serve": "serverless offline --config ./serverless-offline.yml",
+    "watch": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf dist"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@pulumi/aws": "^5.27.0",
+    "@pulumi/aws-native": "^0.47.0",
+    "@pulumi/command": "^0.7.0",
+    "eslint": "^8.32.0",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.3",
+    "pulumi": "^0.0.1",
+    "rimraf": "^4.1.1",
+    "serverless-offline": "^12.0.4",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1297.0"
+  }
+}
