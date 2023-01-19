@@ -16,6 +16,8 @@
     "@pulumi/aws": "^5.27.0",
     "@pulumi/aws-native": "^0.47.0",
     "@pulumi/command": "^0.7.0",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.15",
     "eslint": "^8.32.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.3",
@@ -25,6 +27,10 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "aws-sdk": "^2.1297.0"
+    "@vendia/serverless-express": "^4.10.1",
+    "aws-sdk": "^2.1297.0",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
   }
 }
