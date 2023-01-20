@@ -1,3 +1,6 @@
+/**
+ * @see: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb/index.html
+ */
 import { DeleteCommand, GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { ensureObject } from "../../../utils/Transformations";
 import { ddbDocClient } from "./DynamoDBDocumentClient";
