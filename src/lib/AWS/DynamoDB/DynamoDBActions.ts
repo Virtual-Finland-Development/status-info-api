@@ -1,17 +1,10 @@
 /**
  * @see: https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/dynamodb-example-table-read-write.html
  */
-import {
-  AttributeValue,
-  CreateTableCommand,
-  DeleteItemCommand,
-  DescribeTableCommand,
-  GetItemCommand,
-  PutItemCommand,
-  ScanCommand,
-  UpdateItemCommand,
-} from "@aws-sdk/client-dynamodb";
-import { ddbDocClient } from "./DynamoDBDocumentClient";
+import { CreateTableCommand, DeleteItemCommand, DescribeTableCommand, GetItemCommand, PutItemCommand, ScanCommand, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import { ddbDocClient } from "./DynamoDBClient";
+import { SimpleDynamoDBKey } from "./types";
+import { resolveDynamoDBKey } from "./utils";
 
 export async function scanForItems(tableName: string, filterExpression: string, expressionAttributeValues: any, limit?: number) {
   const params: any = {
@@ -28,37 +21,43 @@ export async function scanForItems(tableName: string, filterExpression: string, 
   return Items;
 }
 
-export async function getItem(tableName: string, key: Record<string, AttributeValue>) {
+/**
+ *
+ * @param tableName
+ * @param key { id: "bazz" } or { id: { S: "bazz" } }
+ * @returns
+ */
+export async function getItem(tableName: string, key: SimpleDynamoDBKey) {
   const params = {
     TableName: tableName,
-    Key: key,
+    Key: await resolveDynamoDBKey(tableName, key),
   };
   const { Item } = await ddbDocClient.send(new GetItemCommand(params));
   return Item;
 }
 
-export async function updateItem(tableName: string, key: Record<string, AttributeValue>, updateExpression: any, expressionAttributeValues: any) {
+export async function updateItem(tableName: string, key: SimpleDynamoDBKey, updateExpression: any, expressionAttributeValues: any) {
   const params = {
     TableName: tableName,
-    Key: key,
+    Key: await resolveDynamoDBKey(tableName, key),
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: expressionAttributeValues,
   };
   await ddbDocClient.send(new UpdateItemCommand(params));
 }
 
-export async function putItem(tableName: string, item: Record<string, AttributeValue>) {
+export async function putItem(tableName: string, item: SimpleDynamoDBKey) {
   const params = {
     TableName: tableName,
-    Item: item,
+    Item: await resolveDynamoDBKey(tableName, item),
   };
   await ddbDocClient.send(new PutItemCommand(params));
 }
 
-export async function deleteItem(tableName: string, key: Record<string, AttributeValue>) {
+export async function deleteItem(tableName: string, key: SimpleDynamoDBKey) {
   const params = {
     TableName: tableName,
-    Key: key,
+    Key: await resolveDynamoDBKey(tableName, key),
   };
   await ddbDocClient.send(new DeleteItemCommand(params));
 }
