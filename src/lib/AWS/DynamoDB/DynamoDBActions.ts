@@ -1,9 +1,16 @@
 /**
- * @see: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb/index.html
- * @see: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/modules/_aws_sdk_lib_dynamodb.html
+ * @see: https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/dynamodb-example-table-read-write.html
  */
-import { CreateTableCommand, DescribeTableCommand } from "@aws-sdk/client-dynamodb";
-import { DeleteCommand, GetCommand, PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  AttributeValue,
+  CreateTableCommand,
+  DeleteItemCommand,
+  DescribeTableCommand,
+  GetItemCommand,
+  PutItemCommand,
+  ScanCommand,
+  UpdateItemCommand,
+} from "@aws-sdk/client-dynamodb";
 import { ddbDocClient } from "./DynamoDBDocumentClient";
 
 export async function scanForItems(tableName: string, filterExpression: string, expressionAttributeValues: any, limit?: number) {
@@ -21,44 +28,39 @@ export async function scanForItems(tableName: string, filterExpression: string, 
   return Items;
 }
 
-export async function getItem(tableName: string, key: Record<string, string | number | boolean | null>) {
+export async function getItem(tableName: string, key: Record<string, AttributeValue>) {
   const params = {
     TableName: tableName,
     Key: key,
   };
-  const { Item } = await ddbDocClient.send(new GetCommand(params));
+  const { Item } = await ddbDocClient.send(new GetItemCommand(params));
   return Item;
 }
 
-export async function updateItem(
-  tableName: string,
-  key: Record<string, string | number | boolean | null>,
-  updateExpression: string,
-  expressionAttributeValues: Record<string, string | number | boolean | null>
-) {
+export async function updateItem(tableName: string, key: Record<string, AttributeValue>, updateExpression: any, expressionAttributeValues: any) {
   const params = {
     TableName: tableName,
     Key: key,
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: expressionAttributeValues,
   };
-  await ddbDocClient.send(new UpdateCommand(params));
+  await ddbDocClient.send(new UpdateItemCommand(params));
 }
 
-export async function putItem(tableName: string, item: Record<string, string | number | boolean | null>) {
+export async function putItem(tableName: string, item: Record<string, AttributeValue>) {
   const params = {
     TableName: tableName,
     Item: item,
   };
-  await ddbDocClient.send(new PutCommand(params));
+  await ddbDocClient.send(new PutItemCommand(params));
 }
 
-export async function deleteItem(tableName: string, key: Record<string, string | number | boolean | null>) {
+export async function deleteItem(tableName: string, key: Record<string, AttributeValue>) {
   const params = {
     TableName: tableName,
     Key: key,
   };
-  await ddbDocClient.send(new DeleteCommand(params));
+  await ddbDocClient.send(new DeleteItemCommand(params));
 }
 
 export async function checkIfTableExists(tableName: string) {
