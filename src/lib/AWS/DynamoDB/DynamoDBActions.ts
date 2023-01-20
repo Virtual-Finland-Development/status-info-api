@@ -1,18 +1,10 @@
 /**
  * @see: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb/index.html
+ * @see: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/modules/_aws_sdk_lib_dynamodb.html
  */
-import { DeleteCommand, GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import { ensureObject } from "../../../utils/Transformations";
+import { CreateTableCommand, DescribeTableCommand } from "@aws-sdk/client-dynamodb";
+import { DeleteCommand, GetCommand, PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { ddbDocClient } from "./DynamoDBDocumentClient";
-
-export async function queryItems(tableName: string, query?: { keyConditionExpression?: string; filterExpression?: string; expressionAttributeValues?: any; limit?: number }) {
-  const params: any = {
-    TableName: tableName,
-    ...ensureObject(query),
-  };
-  const { Items } = await ddbDocClient.send(new QueryCommand(params));
-  return Items;
-}
 
 export async function scanForItems(tableName: string, filterExpression: string, expressionAttributeValues: any, limit?: number) {
   const params: any = {
@@ -67,4 +59,21 @@ export async function deleteItem(tableName: string, key: Record<string, string |
     Key: key,
   };
   await ddbDocClient.send(new DeleteCommand(params));
+}
+
+export async function checkIfTableExists(tableName: string) {
+  try {
+    await ddbDocClient.send(new DescribeTableCommand({ TableName: tableName }));
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+export async function createTable(tableName: string, schema: { KeySchema: Array<any>; AttributeDefinitions: Array<any>; ProvisionedThroughput: any }) {
+  const params = {
+    TableName: tableName,
+    ...schema,
+  };
+  await ddbDocClient.send(new CreateTableCommand(params));
 }
