@@ -36,6 +36,13 @@ export async function getItem(tableName: string, key: SimpleDynamoDBKey) {
   return Item;
 }
 
+/**
+ *
+ * @param tableName
+ * @param key { id: "bazz" } or { id: { S: "bazz" } }
+ * @param updateExpression
+ * @param expressionAttributeValues
+ */
 export async function updateItem(tableName: string, key: SimpleDynamoDBKey, updateExpression: any, expressionAttributeValues: any) {
   const params = {
     TableName: tableName,
@@ -46,6 +53,11 @@ export async function updateItem(tableName: string, key: SimpleDynamoDBKey, upda
   await ddbDocClient.send(new UpdateItemCommand(params));
 }
 
+/**
+ *
+ * @param tableName
+ * @param item { id: "bazz" } or { id: { S: "bazz" } }
+ */
 export async function putItem(tableName: string, item: SimpleDynamoDBKey) {
   const params = {
     TableName: tableName,
@@ -54,6 +66,11 @@ export async function putItem(tableName: string, item: SimpleDynamoDBKey) {
   await ddbDocClient.send(new PutItemCommand(params));
 }
 
+/**
+ *
+ * @param tableName
+ * @param key { id: "bazz" } or { id: { S: "bazz" } }
+ */
 export async function deleteItem(tableName: string, key: SimpleDynamoDBKey) {
   const params = {
     TableName: tableName,
