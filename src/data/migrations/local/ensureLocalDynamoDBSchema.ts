@@ -2,7 +2,7 @@ import { checkIfTableExists, createTable } from "../../../lib/AWS/DynamoDB/Dynam
 import { transformModelToDynamoDBSchema } from "../../../lib/AWS/DynamoDB/utils";
 import Settings from "../../../utils/Settings";
 
-import StatusAdminUIModel from "../../models/StatusAdminUI";
+import StatusAdminUIModel from "../../models/StatusInfo";
 
 export default async function ensureLocalDynamoDBSchema() {
   if (Settings.getStage() !== "local") {

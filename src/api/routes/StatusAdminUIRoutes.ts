@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/bazz", async (req, res) => {
-  const response = await DynamoDB.getItem("StatusAdminUI", { id: "bazz" });
+  const response = await DynamoDB.getItem("StatusInfo", { UserId: "bazz", StatusName: "bizz" });
   res.send({ bazz: response });
 });
 

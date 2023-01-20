@@ -1,7 +1,7 @@
 import * as aws from "@pulumi/aws";
 import * as awsnative from "@pulumi/aws-native";
 
-import StatusAdminUIModel from "../../src/data/models/StatusAdminUI";
+import StatusAdminUIModel from "../../src/data/models/StatusInfo";
 import { transformModelToDynamoDBSchema } from "../../src/lib/AWS/DynamoDB/utils";
 
 export function createDynamoDBTable(configuration: StackConfig, lambdaFunctionExecRole: awsnative.iam.Role) {
