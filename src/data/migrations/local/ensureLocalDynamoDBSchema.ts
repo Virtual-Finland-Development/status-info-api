@@ -1,4 +1,5 @@
 import { checkIfTableExists, createTable } from "../../../lib/AWS/DynamoDB/DynamoDBActions";
+import { transformModelToDynamoDBSchema } from "../../../lib/AWS/DynamoDB/utils";
 import Settings from "../../../utils/Settings";
 
 import StatusAdminUIModel from "../../models/StatusAdminUI";
@@ -16,7 +17,8 @@ export default async function ensureLocalDynamoDBSchema() {
     },
   };
 
-  const { tableName, schema } = StatusAdminUIModel;
+  const { tableName } = StatusAdminUIModel;
+  const schema = transformModelToDynamoDBSchema(StatusAdminUIModel);
 
   if (!(await checkIfTableExists(tableName))) {
     console.log(`Table ${tableName} does not exist, creating it...`);

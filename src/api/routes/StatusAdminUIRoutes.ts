@@ -1,5 +1,5 @@
 import express from "express";
-import DynamoDB from "../../lib/AWS/DynamoDB/index";
+import DynamoDB from "../../lib/AWS/DynamoDB/";
 const router = express.Router();
 
 router.get("/", (req, res) => {

@@ -1,5 +1,5 @@
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
-import { SimpleDynamoDBKey } from "./types";
+import { DynamoDBModel, SimpleDynamoDBKey } from "./types";
 
 export async function attributeTypeResolver(tableName: string, key: string) {
   const {
@@ -35,4 +35,23 @@ export async function resolveDynamoDBKey(tableName: string, key: SimpleDynamoDBK
     return record;
   }
   return key as Record<string, AttributeValue>; // above type guard should ensure this is safe
+}
+
+/**
+ *
+ * @param model
+ * @returns
+ */
+export function transformModelToDynamoDBSchema(model: DynamoDBModel): DynamoDBModel["schema"] {
+  const { schema } = model;
+  const { AttributeDefinitions, KeySchema } = schema;
+  return KeySchema.reduce(
+    (acc: DynamoDBModel["schema"], keySchema: { AttributeName: string; KeyType: string }) => {
+      const keyAttributes = AttributeDefinitions.filter((attributeDefinition: { AttributeName: string }) => attributeDefinition.AttributeName === keySchema.AttributeName);
+      acc.KeySchema.push(keySchema);
+      acc.AttributeDefinitions.push(...keyAttributes);
+      return acc;
+    },
+    { KeySchema: [], AttributeDefinitions: [] }
+  );
 }
