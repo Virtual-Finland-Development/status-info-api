@@ -3,19 +3,22 @@ export default {
   tableName: "StatusInfo",
   schema: {
     KeySchema: [
-      // Primary composite key userid-statusname
       {
-        AttributeName: "UserId",
+        AttributeName: "Id",
         KeyType: "HASH",
-      },
-      {
-        AttributeName: "StatusName",
-        KeyType: "RANGE",
       },
     ],
     AttributeDefinitions: [
       {
+        AttributeName: "Id", // auto-generated uuid
+        AttributeType: "S",
+      },
+      {
         AttributeName: "UserId",
+        AttributeType: "S",
+      },
+      {
+        AttributeName: "UserEmail",
         AttributeType: "S",
       },
       {
@@ -27,7 +30,7 @@ export default {
         AttributeType: "S",
       },
       {
-        AttributeName: "UpdatedAt",
+        AttributeName: "UpdatedAt", // auto-generated timestamp
         AttributeType: "S",
       },
     ],

@@ -1,2 +1,3 @@
-import * as DynamoDBActions from "./DynamoDBActions";
-export default { ...DynamoDBActions };
+import * as DynamoDBHelperActions from "./DynamoDBHelperActions";
+
+export default { ...DynamoDBHelperActions };
