@@ -22,7 +22,7 @@ export async function scan(tableName: string, query: DDBSearchClause = [], limit
 /**
  *
  * @param tableName
- * @param key { id: "bazz" } or { id: { S: "bazz" } }
+ * @param key - { id: "bazz" } or { id: { S: "bazz" } }
  * @returns
  */
 export async function getItem(tableName: string, key: LooseDynamoDBRecord) {
@@ -36,9 +36,8 @@ export async function getItem(tableName: string, key: LooseDynamoDBRecord) {
 /**
  *
  * @param tableName
- * @param key { id: "bazz" } or { id: { S: "bazz" } }
- * @param updateExpression
- * @param expressionAttributeValues
+ * @param item - { Id: "bazz", StatusName: "buzz", StatusValue: "bazz" }
+ * @returns
  */
 export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
   item.UpdatedAt = new Date().toISOString();
@@ -50,7 +49,7 @@ export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
 /**
  *
  * @param tableName
- * @param item { id: "bazz" } or { id: { S: "bazz" } }
+ * @param item - { id: "bazz" } or { id: { S: "bazz" } }
  */
 export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
   item.Id = uuidv4();
@@ -62,7 +61,7 @@ export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
 /**
  *
  * @param tableName
- * @param key { id: "bazz" } or { id: { S: "bazz" } }
+ * @param key - { id: "bazz" } or { id: { S: "bazz" } }
  */
 export async function deleteItem(tableName: string, key: LooseDynamoDBRecord) {
   return Actions.deleteItem(tableName, await resolveDynamoDBKey(tableName, key));
