@@ -22,3 +22,6 @@ export class AppError extends Error {
   }
 }
 export class DatabaseError extends AppError {}
+export class ValidationError extends AppError {
+  status = 422;
+}

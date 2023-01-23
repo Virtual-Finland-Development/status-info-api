@@ -1,8 +1,7 @@
-import { v4 as uuidv4 } from "uuid";
 import { DatabaseError } from "../../../utils/exceptions";
 import * as Actions from "./DynamoDBActions";
-import { DDBSearchClause, LooseDynamoDBRecord } from "./types";
-import { resolveDynamoDBKey, resolveDynamoDBSearchClause, resolveDynamoDBUpdateItem, transformDynamoDBRecordToSimpleRecord } from "./utils";
+import { DDBSearchClause, LooseDynamoDBRecord } from "./DynamoDBORMTypes";
+import { ensurePrimitiveDynamoDBRecord, parseDynamoDBInputItem, resolveDynamoDBKey, resolveDynamoDBSearchClause, resolveDynamoDBUpdateItem } from "./DynamoDBORMUtils";
 
 /**
  *
@@ -15,7 +14,7 @@ export async function scan(tableName: string, query: DDBSearchClause = [], limit
   const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, query);
   const items = await Actions.scan(tableName, filterExpression, expressionAttributeValues, limit);
   if (items instanceof Array) {
-    return items.map((item) => transformDynamoDBRecordToSimpleRecord(item));
+    return items.map((item) => ensurePrimitiveDynamoDBRecord(item));
   }
   return [];
 }
@@ -36,7 +35,7 @@ export async function getItem(tableName: string, key: LooseDynamoDBRecord) {
   if (!item) {
     return null;
   }
-  return transformDynamoDBRecordToSimpleRecord(item);
+  return ensurePrimitiveDynamoDBRecord(item);
 }
 
 /**
@@ -47,19 +46,21 @@ export async function getItem(tableName: string, key: LooseDynamoDBRecord) {
  */
 export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
   try {
-    const { key, updateExpression, expressionAttributeValues } = await resolveDynamoDBUpdateItem(tableName, item);
+    // Preps
+    const updateableItem = await parseDynamoDBInputItem(tableName, item, "update");
+    const { key, updateExpression, expressionAttributeValues } = await resolveDynamoDBUpdateItem(tableName, updateableItem);
+
+    // Checks
     const itemActual = await getItem(tableName, key);
     if (!itemActual) {
       throw new DatabaseError("Could not find item to update", 404);
     }
 
-    // Autofills
-    item.updatedAt = new Date().toISOString();
-
+    // Updates
     await Actions.updateItem(tableName, key, updateExpression, expressionAttributeValues);
     return {
       ...itemActual,
-      ...item,
+      ...updateableItem,
     };
   } catch (error) {
     throw new DatabaseError(error);
@@ -72,13 +73,13 @@ export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
  * @param item - { id: "bazz" } or { id: { S: "bazz" } }
  */
 export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
-  // Autofills
-  item.id = uuidv4();
-  item.updatedAt = new Date().toISOString();
-
   try {
-    await Actions.putItem(tableName, await resolveDynamoDBKey(tableName, item, false));
-    return item;
+    // Preps
+    const insertableItem = await parseDynamoDBInputItem(tableName, item, "create");
+
+    // Inserts
+    await Actions.putItem(tableName, await resolveDynamoDBKey(tableName, insertableItem, false));
+    return insertableItem;
   } catch (error) {
     throw new DatabaseError(error);
   }

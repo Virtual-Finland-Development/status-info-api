@@ -1,9 +1,9 @@
 import { checkIfTableExists, createTable } from "../../../lib/AWS/DynamoDB/DynamoDBActions";
-import { putItem } from "../../../lib/AWS/DynamoDB/DynamoDBHelperActions";
-import { transformModelToDynamoDBSchema } from "../../../lib/AWS/DynamoDB/utils";
+import { putItem } from "../../../lib/AWS/DynamoDB/DynamoDBORM";
+import { transformModelToDynamoDBSchema } from "../../../lib/AWS/DynamoDB/DynamoDBORMUtils";
 import Settings from "../../../utils/Settings";
 
-import StatusAdminUIModel from "../../models/StatusInfo";
+import StatusInfoModel from "../../models/StatusInfo";
 
 export default async function ensureLocalDynamoDBSchema() {
   if (Settings.getStage() !== "local") {
@@ -18,13 +18,13 @@ export default async function ensureLocalDynamoDBSchema() {
     },
   };
 
-  const { tableName } = StatusAdminUIModel;
-  const schema = transformModelToDynamoDBSchema(StatusAdminUIModel);
+  const { tableName } = StatusInfoModel;
+  const schema = transformModelToDynamoDBSchema(StatusInfoModel);
 
   if (!(await checkIfTableExists(tableName))) {
     console.log(`Table ${tableName} does not exist, creating it...`);
     await createTable(tableName, { ...defaultsForLocal, ...schema });
-    console.log("Populating table with exmaple data...");
+    console.log("Populating table with example data...");
     await putItem(tableName, { id: "12345-qwerty-67890-asdfgh", statusName: "ExampleStatus", statusValue: "COMPLETED" });
   }
 }

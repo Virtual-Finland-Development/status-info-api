@@ -1,18 +1,11 @@
 import express from "express";
-import DynamoDB from "../../lib/AWS/DynamoDB/";
+import DynamoDB from "../../lib/AWS/DynamoDB";
 const router = express.Router();
-
-router.get("/", async (req, res) => {
-  const response = await DynamoDB.updateItem("StatusInfo", { id: "nope", statusName: "statusName", statusValue: "statusValue" });
-  res.send({ item: response });
-  //res.send("OK Status Admin UI");
-});
 
 router.put("/statusinfos", async (req, res) => {
   //const response = await DynamoDB.putItem("StatusInfo", { userId: "bizz", userEmail: "bizz@bazz" });
   //res.send({ bazz: response });
-
-  return res.status(400).json({ message: "Not implemented" });
+  throw new Error("Not implemented");
 });
 
 router.get("/statusinfos", async (req, res) => {
@@ -23,7 +16,7 @@ router.get("/statusinfos", async (req, res) => {
 router.post("/statusinfos/:id", async (req, res) => {
   const { id } = req.params;
   const { statusName, statusValue } = req.body;
-  const response = await DynamoDB.updateItem("StatusInfo", { id: id, statusName: statusName, statusValue: statusValue });
+  const response = await DynamoDB.updateItem("StatusInfo", { id: id, statusName: "ExampleStatus", statusValue: "BAZZ" });
   res.send({ item: response });
 });
 

@@ -13,7 +13,7 @@ import {
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { ddbDocClient } from "./DynamoDBClient";
-import { DynamoDBRecord } from "./types";
+import { DynamoDBRecord } from "./DynamoDBORMTypes";
 
 /**
  * @see: https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/dynamodb-example-query-scan.html

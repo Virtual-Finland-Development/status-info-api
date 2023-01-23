@@ -1,3 +1,3 @@
-import * as DynamoDBHelperActions from "./DynamoDBHelperActions";
+import * as DynamoDBHelperActions from "./DynamoDBORM";
 
 export default { ...DynamoDBHelperActions };
