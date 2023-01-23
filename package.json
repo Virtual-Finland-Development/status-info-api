@@ -8,7 +8,7 @@
     "migrate-local": "npx ts-node src/data/migrations/local/ensureLocalDynamoDBSchema.ts",
     "serve": "serverless offline --config ./serverless-offline.yml",
     "watch": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "clean": "rimraf dist"
   },
   "author": "",
@@ -26,7 +26,8 @@
     "pulumi": "^0.0.1",
     "rimraf": "^4.1.1",
     "serverless-offline": "^12.0.4",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "vitest": "^0.27.3"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.252.0",
