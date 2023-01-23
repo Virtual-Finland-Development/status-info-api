@@ -1,4 +1,11 @@
 import { DocumentBuilder } from "express-openapi-generator";
+import { OpenAPIV3 } from "openapi-types";
+
+// Operations handle
+const builtOperationDocs: Record<string, Record<string, OpenAPIV3.OperationObject>> = {};
+
+// Documentation object
+let builtDocumentation: any;
 
 // Generate documentation
 const documentationBuilder = DocumentBuilder.initializeDocument({
@@ -18,29 +25,36 @@ const documentationBuilder = DocumentBuilder.initializeDocument({
   paths: {},
 });
 
-let builtDocumentation: any;
-
-/**
- *
- * @param routerApp
- * @returns
- */
-function generateDocumentation(routerApp: any) {
-  documentationBuilder.generatePathsObject(routerApp);
-  builtDocumentation = documentationBuilder.build();
-  return builtDocumentation;
-}
-
 export default {
   builder: documentationBuilder,
-  initialize: generateDocumentation,
-  asObject: () => {
+  initialize(routerApp: any) {
+    documentationBuilder.generatePathsObject(routerApp);
+    builtDocumentation = documentationBuilder.build();
+
+    // Merge operation docs if any
+    for (const path in builtOperationDocs) {
+      for (const method in builtOperationDocs[path]) {
+        builtDocumentation.paths[path][method] = {
+          ...builtDocumentation.paths[path][method],
+          ...builtOperationDocs[path][method],
+        };
+      }
+    }
+    return builtDocumentation;
+  },
+  addOperationDoc(method: string, path: string, openapi: OpenAPIV3.OperationObject) {
+    if (!builtOperationDocs[path]) {
+      builtOperationDocs[path] = {};
+    }
+    builtOperationDocs[path][method] = openapi;
+  },
+  asObject() {
     if (!builtDocumentation) {
       throw new Error("Documentation has not been generated yet");
     }
     return builtDocumentation;
   },
-  getSwaggerHtml: (openApiDocUrl: string) => {
+  getSwaggerHtml(openApiDocUrl: string) {
     if (!builtDocumentation) {
       throw new Error("Documentation has not been generated yet");
     }

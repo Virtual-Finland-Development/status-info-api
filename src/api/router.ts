@@ -3,10 +3,10 @@ import cors from "cors";
 import express from "express";
 import "express-async-errors";
 import * as OpenApiValidator from "express-openapi-validator";
-import Documentation from "./Documentation";
 import BaseRoutes from "./routes/BaseRoutes";
 import ProductizerRoutes from "./routes/ProductizerRoutes";
 import StatusAdminUIRoutes from "./routes/StatusAdminRoutes";
+import Documentation from "./utils/Documentation";
 
 //
 // Setup

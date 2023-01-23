@@ -39,6 +39,7 @@
     "express-async-errors": "^3.1.1",
     "express-openapi-generator": "^1.2.0",
     "express-openapi-validator": "^5.0.1",
+    "openapi-types": "^12.1.0",
     "uuid": "^9.0.0"
   }
 }
