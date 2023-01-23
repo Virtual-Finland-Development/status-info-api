@@ -9,7 +9,6 @@ const documentationBuilder = DocumentBuilder.initializeDocument({
     description: "API for Statusinfo",
     contact: {
       name: "Virtual Finland",
-      email: "",
     },
     license: {
       name: "MIT",
