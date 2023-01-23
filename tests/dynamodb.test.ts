@@ -1,5 +1,5 @@
 import { expect, it, vi } from "vitest";
-import DynamoDB from "../lib/AWS/DynamoDB/";
+import DynamoDB from "../src/lib/AWS/DynamoDB";
 
 it("should work", async () => {
   vi.mock(
