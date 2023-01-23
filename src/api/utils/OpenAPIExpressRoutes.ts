@@ -13,7 +13,8 @@ export default class OpenAPIExpressRoutes {
     return this.#router;
   }
 
-  addRoute(method: string, path: string, handler: express.RequestHandler, openapi?: OpenAPIV3.OperationObject) {
+  addRoute(routeDescription: { method: string; path: string; handler: express.RequestHandler; openapi?: OpenAPIV3.OperationObject }) {
+    const { method, path, handler, openapi } = routeDescription;
     this.#router[method](path, handler);
     if (openapi) {
       Documentation.addOperationDoc(method, path, openapi);

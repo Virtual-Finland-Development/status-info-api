@@ -3,13 +3,13 @@ import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 
 const routes = new OpenAPIExpressRoutes();
 
-routes.addRoute(
-  "get",
-  "/",
-  (req, res) => {
+routes.addRoute({
+  path: "/",
+  method: "get",
+  handler: (req, res) => {
     res.redirect("/docs");
   },
-  {
+  openapi: {
     summary: "Redirect to the documentation",
     description: "Redirect to the documentation",
     responses: {
@@ -17,16 +17,16 @@ routes.addRoute(
         description: "Redirect to the documentation",
       },
     },
-  }
-);
+  },
+});
 
-routes.addRoute(
-  "get",
-  "/health",
-  (req, res) => {
+routes.addRoute({
+  path: "/health",
+  method: "get",
+  handler: (req, res) => {
     res.send({ message: "OK" });
   },
-  {
+  openapi: {
     summary: "Get the status of the service",
     description: "Get the status of the service",
     responses: {
@@ -48,17 +48,25 @@ routes.addRoute(
         },
       },
     },
-  }
-);
-
-routes.addRoute("get", "/docs", (req, res) => {
-  const docs = Documentation.getSwaggerHtml("/docs/openapi.json");
-  res.send(docs);
+  },
 });
 
-routes.addRoute("get", "/docs/openapi.json", (req, res) => {
-  const docs = Documentation.asObject();
-  res.send(docs);
+routes.addRoute({
+  path: "/docs",
+  method: "get",
+  handler: (req, res) => {
+    const docs = Documentation.getSwaggerHtml("/docs/openapi.json");
+    res.send(docs);
+  },
+});
+
+routes.addRoute({
+  path: "/docs/openapi.json",
+  method: "get",
+  handler: (req, res) => {
+    const docs = Documentation.asObject();
+    res.send(docs);
+  },
 });
 
 export default routes.getRouter();
