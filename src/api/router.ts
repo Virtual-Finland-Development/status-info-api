@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
+import "express-async-errors";
 import * as OpenApiValidator from "express-openapi-validator";
 import Documentation from "./Documentation";
 import BaseRoutes from "./routes/BaseRoutes";
@@ -39,8 +40,8 @@ routerApp.use(
   })
 );
 
+// Handle non-panicing errors
 routerApp.use((err: any, req: any, res: any, next: any) => {
-  // format error
   res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,

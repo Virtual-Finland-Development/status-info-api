@@ -2,13 +2,16 @@ import express from "express";
 import DynamoDB from "../../lib/AWS/DynamoDB/";
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.send("OK Status Admin UI");
+router.get("/", async (req, res) => {
+  const response = await DynamoDB.updateItem("StatusInfo", { id: "nope", statusName: "statusName", statusValue: "statusValue" });
+  res.send({ item: response });
+  //res.send("OK Status Admin UI");
 });
 
 router.put("/statusinfos", async (req, res) => {
   //const response = await DynamoDB.putItem("StatusInfo", { userId: "bizz", userEmail: "bizz@bazz" });
   //res.send({ bazz: response });
+
   return res.status(400).json({ message: "Not implemented" });
 });
 
