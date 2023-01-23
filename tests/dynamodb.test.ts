@@ -25,7 +25,7 @@ describe("DynamoDB", () => {
                 return {
                   send: vi.fn((action) => {
                     if (action instanceof clientActual.GetItemCommand) {
-                      const index = mockItems.findIndex((item: any) => item.Id.S === action.input.Key.Id.S);
+                      const index = mockItems.findIndex((item: any) => item.id.S === action.input.Key.id.S);
                       if (index > -1) {
                         return {
                           Item: mockItems[index],
@@ -40,7 +40,7 @@ describe("DynamoDB", () => {
                       return;
                     }
                     if (action instanceof clientActual.UpdateItemCommand) {
-                      const index = mockItems.findIndex((item: any) => item.Id.S === action.input.Key.Id.S);
+                      const index = mockItems.findIndex((item: any) => item.id.S === action.input.Key.id.S);
                       if (index > -1) {
                         const update: any = {};
                         for (const key in action.input.ExpressionAttributeValues) {
@@ -59,7 +59,7 @@ describe("DynamoDB", () => {
                       return;
                     }
                     if (action instanceof clientActual.DeleteItemCommand) {
-                      const index = mockItems.findIndex((item: any) => item.Id.S === action.input.Key.Id.S);
+                      const index = mockItems.findIndex((item: any) => item.id.S === action.input.Key.id.S);
                       if (index > -1) {
                         mockItems.splice(index, 1);
                       }
@@ -91,26 +91,26 @@ describe("DynamoDB", () => {
     expect(await DynamoDB.scan("StatusInfo")).toEqual([]); // Baseline test
 
     // Create
-    const item = await DynamoDB.putItem("StatusInfo", { StatusName: "Test", StatusValue: "In Progress" });
-    expect(item.Id).toBeDefined();
-    expect(item.StatusName).toBe("Test");
-    expect(item.StatusValue).toBe("In Progress");
+    const item = await DynamoDB.putItem("StatusInfo", { statusName: "Test", statusValue: "In Progress" });
+    expect(item.id).toBeDefined();
+    expect(item.statusName).toBe("Test");
+    expect(item.statusValue).toBe("In Progress");
 
     // Read
-    const readItem = await DynamoDB.getItem("StatusInfo", { Id: item.Id });
-    expect(readItem?.Id).toBe(item.Id);
-    expect(readItem?.StatusName).toBe(item.StatusName);
-    expect(readItem?.StatusValue).toBe(item.StatusValue);
+    const readItem = await DynamoDB.getItem("StatusInfo", { id: item.id });
+    expect(readItem?.id).toBe(item.id);
+    expect(readItem?.statusName).toBe(item.statusName);
+    expect(readItem?.statusValue).toBe(item.statusValue);
 
     // Update
-    await DynamoDB.updateItem("StatusInfo", { Id: item.Id, StatusValue: "Complete" });
-    const updateItem = await DynamoDB.getItem("StatusInfo", { Id: item.Id });
-    expect(updateItem?.Id).toBe(item.Id);
-    expect(updateItem?.StatusName).toBe(item.StatusName);
-    expect(updateItem?.StatusValue).toBe("Complete");
+    await DynamoDB.updateItem("StatusInfo", { id: item.id, statusValue: "Complete" });
+    const updateItem = await DynamoDB.getItem("StatusInfo", { id: item.id });
+    expect(updateItem?.id).toBe(item.id);
+    expect(updateItem?.statusName).toBe(item.statusName);
+    expect(updateItem?.statusValue).toBe("Complete");
 
     // Delete
-    await DynamoDB.deleteItem("StatusInfo", { Id: item.Id });
-    expect(await DynamoDB.getItem("StatusInfo", { Id: item.Id })).toBeNull();
+    await DynamoDB.deleteItem("StatusInfo", { id: item.id });
+    expect(await DynamoDB.getItem("StatusInfo", { id: item.id })).toBeNull();
   });
 });

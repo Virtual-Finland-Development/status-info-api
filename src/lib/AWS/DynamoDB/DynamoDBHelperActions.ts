@@ -36,11 +36,11 @@ export async function getItem(tableName: string, key: LooseDynamoDBRecord) {
 /**
  *
  * @param tableName
- * @param item - { Id: "bazz", StatusName: "buzz", StatusValue: "bazz" }
+ * @param item - { id: "bazz", statusName: "buzz", statusValue: "bazz" }
  * @returns
  */
 export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
-  item.UpdatedAt = new Date().toISOString();
+  item.updatedAt = new Date().toISOString();
   const { key, updateExpression, expressionAttributeValues } = await resolveDynamoDBUpdateItem(tableName, item);
   await Actions.updateItem(tableName, key, updateExpression, expressionAttributeValues);
   return item;
@@ -52,8 +52,8 @@ export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
  * @param item - { id: "bazz" } or { id: { S: "bazz" } }
  */
 export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
-  item.Id = uuidv4();
-  item.UpdatedAt = new Date().toISOString();
+  item.id = uuidv4();
+  item.updatedAt = new Date().toISOString();
   await Actions.putItem(tableName, await resolveDynamoDBKey(tableName, item, false));
   return item;
 }

@@ -4,33 +4,33 @@ export default {
   schema: {
     KeySchema: [
       {
-        AttributeName: "Id",
+        AttributeName: "id",
         KeyType: "HASH",
       },
     ],
     AttributeDefinitions: [
       {
-        AttributeName: "Id", // auto-generated uuid
+        AttributeName: "id", // auto-generated uuid
         AttributeType: "S",
       },
       {
-        AttributeName: "UserId",
+        AttributeName: "userId",
         AttributeType: "S",
       },
       {
-        AttributeName: "UserEmail",
+        AttributeName: "userEmail",
         AttributeType: "S",
       },
       {
-        AttributeName: "StatusName",
+        AttributeName: "statusName",
         AttributeType: "S",
       },
       {
-        AttributeName: "StatusValue",
+        AttributeName: "statusValue",
         AttributeType: "S",
       },
       {
-        AttributeName: "UpdatedAt", // auto-generated timestamp
+        AttributeName: "updatedAt", // auto-generated timestamp
         AttributeType: "S",
       },
     ],
