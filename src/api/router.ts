@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
+import Documentation from "./Documentation";
 import BaseRoutes from "./routes/BaseRoutes";
 import ProductizerRoutes from "./routes/ProductizerRoutes";
 import StatusAdminUIRoutes from "./routes/StatusAdminUIRoutes";
@@ -26,4 +27,6 @@ router.use("/productizers", ProductizerRoutes);
 // Packaging
 //
 routerApp.use("/", router);
+Documentation.initialize(routerApp);
+
 export default routerApp;
