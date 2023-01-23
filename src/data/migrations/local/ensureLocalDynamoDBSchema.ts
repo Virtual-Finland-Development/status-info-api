@@ -1,4 +1,5 @@
 import { checkIfTableExists, createTable } from "../../../lib/AWS/DynamoDB/DynamoDBActions";
+import { putItem } from "../../../lib/AWS/DynamoDB/DynamoDBHelperActions";
 import { transformModelToDynamoDBSchema } from "../../../lib/AWS/DynamoDB/utils";
 import Settings from "../../../utils/Settings";
 
@@ -23,6 +24,8 @@ export default async function ensureLocalDynamoDBSchema() {
   if (!(await checkIfTableExists(tableName))) {
     console.log(`Table ${tableName} does not exist, creating it...`);
     await createTable(tableName, { ...defaultsForLocal, ...schema });
+    console.log("Populating table with exmaple data...");
+    await putItem(tableName, { Id: "12345-qwerty-67890-asdfgh", StatusName: "ExampleStatus", StatusValue: "COMPLETED" });
   }
 }
 
