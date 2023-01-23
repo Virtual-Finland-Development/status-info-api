@@ -10,7 +10,7 @@ export default class OpenAPIExpressRoutes {
 
   constructor(rootRoutePath: string = "/") {
     this.#router = express.Router();
-    this.#rootRoutePath = `/${trimSlashes(rootRoutePath)}}`;
+    this.#rootRoutePath = `/${trimSlashes(rootRoutePath)}`;
   }
 
   getRouter() {
@@ -25,7 +25,8 @@ export default class OpenAPIExpressRoutes {
     this.#router[routerMethod](`/${pathie}`, handler);
     // Register route documentation
     if (openapi) {
-      Documentation.addOperationDoc(routerMethod, `${trimSlashes(this.#rootRoutePath)}/${pathie}`, openapi);
+      const opsPath = `${this.#rootRoutePath}${pathie}`;
+      Documentation.addOperationDoc(routerMethod, opsPath, openapi);
     }
   }
 }

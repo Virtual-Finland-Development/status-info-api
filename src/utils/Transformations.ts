@@ -23,5 +23,5 @@ export function getEnumValues(enumObj: any): string[] {
 }
 
 export function trimSlashes(str: string): string {
-  return str.replace(/^\/+|\/+$/g, "");
+  return str.replace(/^\/?|\/?$/g, "");
 }
