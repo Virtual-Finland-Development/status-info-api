@@ -1,8 +1,23 @@
-import express from "express";
-const router = express.Router();
+import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 
-router.get("/", (req, res) => {
-  res.send("OK Productizers");
-});
+export default function (rootRoutePath: string) {
+  const routes = new OpenAPIExpressRoutes(rootRoutePath);
+  routes.addRoute({
+    path: "/",
+    method: "GET",
+    handler: (req, res) => {
+      res.send("OK Productizers");
+    },
+    openapi: {
+      summary: "Dummy response to productizers base route path",
+      description: "No impolemetations yet",
+      responses: {
+        "200": {
+          description: "Success",
+        },
+      },
+    },
+  });
 
-export default router;
+  return [rootRoutePath, routes.getRouter()];
+}

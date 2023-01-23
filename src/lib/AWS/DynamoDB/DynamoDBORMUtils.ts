@@ -234,7 +234,7 @@ function validateDynamoDBValueUpdate(schema: DynamoDBModel["schema"], item: Prim
 
     // @ts-ignore: Object is possibly 'undefined' check is done above
     if (!_AllowedValues.includes(itemValue)) {
-      throw new ValidationError(`Invalid value for attribute ${AttributeName}. Value: ${itemValue}. Allowed values: ${_AllowedValues}`);
+      throw new ValidationError(`Invalid value for attribute ${AttributeName}. Value: [${itemValue}]. Allowed values: [${_AllowedValues?.join(", ")}]`);
     }
   }
 }

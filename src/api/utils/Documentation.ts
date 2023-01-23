@@ -1,5 +1,6 @@
 import { DocumentBuilder } from "express-openapi-generator";
 import { OpenAPIV3 } from "openapi-types";
+import { trimSlashes } from "../../utils/Transformations";
 
 // Operations handle
 const builtOperationDocs: Record<string, Record<string, OpenAPIV3.OperationObject>> = {};
@@ -26,7 +27,6 @@ const documentationBuilder = DocumentBuilder.initializeDocument({
 });
 
 export default {
-  builder: documentationBuilder,
   initialize(routerApp: any) {
     documentationBuilder.generatePathsObject(routerApp);
     builtDocumentation = documentationBuilder.build();
@@ -34,19 +34,22 @@ export default {
     // Merge operation docs if any
     for (const path in builtOperationDocs) {
       for (const method in builtOperationDocs[path]) {
-        builtDocumentation.paths[path][method] = {
-          ...builtDocumentation.paths[path][method],
-          ...builtOperationDocs[path][method],
-        };
+        if (typeof builtDocumentation.paths[path] !== "undefined") {
+          builtDocumentation.paths[path][method] = {
+            ...builtDocumentation.paths[path][method],
+            ...builtOperationDocs[path][method],
+          };
+        }
       }
     }
     return builtDocumentation;
   },
   addOperationDoc(method: string, path: string, openapi: OpenAPIV3.OperationObject) {
-    if (!builtOperationDocs[path]) {
-      builtOperationDocs[path] = {};
+    const trimmedPath = `/${trimSlashes(path)}`;
+    if (typeof builtOperationDocs[trimmedPath] === "undefined") {
+      builtOperationDocs[trimmedPath] = {};
     }
-    builtOperationDocs[path][method] = openapi;
+    builtOperationDocs[trimmedPath][method] = openapi;
   },
   asObject() {
     if (!builtDocumentation) {
