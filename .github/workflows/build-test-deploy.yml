@@ -34,9 +34,6 @@ jobs:
       - name: Test
         run: |
           npm run test
-      - name: Prepare deploy artifacts
-        run: |
-          npm run predeploy
       - name: Deploy with Pulumi
         id: pulumi
         uses: pulumi/actions@v3
