@@ -6,7 +6,7 @@ export default function (rootRoutePath: string) {
   const routes = new OpenAPIExpressRoutes(rootRoutePath);
 
   routes.addRoute({
-    path: "/statusinfos",
+    path: "/status-infos",
     method: "GET",
     async handler(req, res) {
       const items = await DynamoDB.scan("StatusInfo");
@@ -37,7 +37,7 @@ export default function (rootRoutePath: string) {
   });
 
   routes.addRoute({
-    path: "/statusinfos/:id",
+    path: "/status-infos/:id",
     method: "POST",
     async handler(req, res) {
       const { id } = req.params;
@@ -62,7 +62,7 @@ export default function (rootRoutePath: string) {
   });
 
   routes.addRoute({
-    path: "/statusinfos/:id",
+    path: "/status-infos/:id",
     method: "DELETE",
     async handler(req, res) {
       const { id } = req.params;
