@@ -32,12 +32,13 @@ export function createLambdaFunction(stackConfig: StackConfig, lambdaFunctionExe
   /**
    * Dependencies layer for lambda functions
    */
-  const nodeModulesLayer = new aws.lambda.LayerVersion("status-info-api-dependenices-layer", {
+  const layerName = stackConfig.generateResourceName("dependencies-layer");
+  const nodeModulesLayer = new aws.lambda.LayerVersion(layerName, {
     code: new pulumi.asset.AssetArchive({
       "./nodejs/node_modules": new pulumi.asset.FileArchive("../node_modules"),
     }),
     compatibleRuntimes: [aws.lambda.Runtime.NodeJS18dX],
-    layerName: "status-info-api-dependenices-layer",
+    layerName: layerName,
   });
 
   const lambdaFunction = new aws.lambda.Function(stackConfig.generateResourceName("lambdaFunction"), {

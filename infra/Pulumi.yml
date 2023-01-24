@@ -1,0 +1,7 @@
+name: status-info-api
+description: API for status information
+runtime: nodejs
+main: main.ts
+config:
+  aws:region: eu-north-1
+  aws-native:region: eu-north-1
