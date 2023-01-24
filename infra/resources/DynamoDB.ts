@@ -30,6 +30,7 @@ export function createDynamoDBTable(configuration: StackConfig, lambdaFunctionEx
   const fulltableName = configuration.generateResourceName(tableInfo.name);
   const statusTable = new aws.dynamodb.Table(fulltableName, {
     ...tableInfo,
+    name: fulltableName,
     billingMode: "PAY_PER_REQUEST",
     tags: configuration.getTags(),
   });
