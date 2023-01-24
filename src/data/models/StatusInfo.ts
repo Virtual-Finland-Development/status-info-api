@@ -70,6 +70,11 @@ export default {
         statusValue: {
           description: "value of the status",
           type: "string",
+          enum: getEnumValues(AllowedStatusValues),
+        },
+        userId: {
+          description: "user identification code",
+          type: "string",
         },
         userEmail: {
           description: "email of the user",
