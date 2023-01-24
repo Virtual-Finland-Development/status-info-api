@@ -14,6 +14,7 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { ddbDocClient } from "./DynamoDBClient";
 import { DynamoDBRecord } from "./DynamoDBORMTypes";
+import { resolveTableNameActual } from "./DynamoDBORMUtils";
 
 /**
  * @see: https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/dynamodb-example-query-scan.html
@@ -30,7 +31,7 @@ export async function query(tableName: string, keyConditionExpression: string, f
     //FilterExpression: filterExpression,
     ExpressionAttributeValues: expressionAttributeValues,
     //ProjectionExpression: "Episode, Title, Subtitle",
-    TableName: tableName,
+    TableName: resolveTableNameActual(tableName),
   };
 
   const { Items } = await ddbDocClient.send(new QueryCommand(params));
@@ -48,7 +49,7 @@ export async function query(tableName: string, keyConditionExpression: string, f
  */
 export async function scan(tableName: string, filterExpression: string, expressionAttributeValues: any, limit?: number) {
   const params: any = {
-    TableName: tableName,
+    TableName: resolveTableNameActual(tableName),
     FilterExpression: filterExpression,
     ExpressionAttributeValues: expressionAttributeValues,
     // ProjectionExpression: "Season, Episode, Title, Subtitle",
@@ -75,7 +76,7 @@ export async function scan(tableName: string, filterExpression: string, expressi
  */
 export async function getItem(tableName: string, key: DynamoDBRecord) {
   const params = {
-    TableName: tableName,
+    TableName: resolveTableNameActual(tableName),
     Key: key,
   };
   const { Item } = await ddbDocClient.send(new GetItemCommand(params));
@@ -91,7 +92,7 @@ export async function getItem(tableName: string, key: DynamoDBRecord) {
  */
 export async function updateItem(tableName: string, key: DynamoDBRecord, updateExpression: any, expressionAttributeValues: any) {
   const params = {
-    TableName: tableName,
+    TableName: resolveTableNameActual(tableName),
     Key: key,
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: expressionAttributeValues,
@@ -106,7 +107,7 @@ export async function updateItem(tableName: string, key: DynamoDBRecord, updateE
  */
 export async function putItem(tableName: string, item: DynamoDBRecord) {
   const params = {
-    TableName: tableName,
+    TableName: resolveTableNameActual(tableName),
     Item: item,
     ConditionExpression: "attribute_not_exists(pk)",
   };
@@ -120,7 +121,7 @@ export async function putItem(tableName: string, item: DynamoDBRecord) {
  */
 export async function deleteItem(tableName: string, key: DynamoDBRecord) {
   const params = {
-    TableName: tableName,
+    TableName: resolveTableNameActual(tableName),
     Key: key,
   };
   await ddbDocClient.send(new DeleteItemCommand(params));
@@ -133,7 +134,7 @@ export async function deleteItem(tableName: string, key: DynamoDBRecord) {
  */
 export async function checkIfTableExists(tableName: string) {
   try {
-    await ddbDocClient.send(new DescribeTableCommand({ TableName: tableName }));
+    await ddbDocClient.send(new DescribeTableCommand({ TableName: resolveTableNameActual(tableName) }));
     return true;
   } catch (error) {
     return false;
@@ -147,7 +148,7 @@ export async function checkIfTableExists(tableName: string) {
  */
 export async function createTable(tableName: string, schema: { KeySchema: Array<any>; AttributeDefinitions: Array<any>; ProvisionedThroughput: any }) {
   const params = {
-    TableName: tableName,
+    TableName: resolveTableNameActual(tableName),
     ...schema,
   };
   await ddbDocClient.send(new CreateTableCommand(params));
