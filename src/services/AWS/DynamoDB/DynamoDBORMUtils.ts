@@ -2,6 +2,7 @@ import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4, v5 as uuidv5 } from "uuid";
 import { getModel } from "../../../data/DataManager";
 import { ValidationError } from "../../../utils/exceptions";
+import Settings from "../../../utils/Settings";
 import { cloneItem } from "../../../utils/Transformations";
 import { DDBPrimitive, DDBSearchClause, DynamoDBModel, LooseDynamoDBRecord, PrimitiveDynamoDBRecord } from "./DynamoDBORMTypes";
 
@@ -347,4 +348,13 @@ export async function resolveQueryableSearch(tableName: string, searchClause: DD
   }
 
   return queryableSearchClause;
+}
+
+/**
+ *
+ * @param tableName
+ * @returns
+ */
+export function resolveTableNameActual(tableName: string): string {
+  return Settings.getEnvironmentVariable(`DYNAMODB_TABLE_${tableName}`, tableName);
 }

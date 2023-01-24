@@ -27,5 +27,5 @@ functions:
       AWS_REGION: eu-north-1
       AWS_ACCESS_KEY_ID: dummy
       AWS_SECRET_ACCESS_KEY: dummy
-      DYNAMODB_TABLE_NAME: ${env:DYNAMODB_CACHE_TABLE_NAME, 'status-info-api-StatusTable-local'}
+      DYNAMODB_TABLE_StatusInfo: ${env:DYNAMODB_TABLE_StatusInfo, 'status-info-api-StatusTable-local'}
       DYNAMODB_ENDPOINT: ${env:DYNAMODB_ENDPOINT, 'http://localhost:8000'}

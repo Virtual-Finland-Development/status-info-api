@@ -8,6 +8,7 @@ import {
   resolveDynamoDBSearchClause,
   resolveDynamoDBUpdateItem,
   resolveQueryableSearch,
+  resolveTableNameActual,
 } from "./DynamoDBORMUtils";
 
 /**
@@ -19,7 +20,7 @@ import {
  */
 export async function scan(tableName: string, query: DDBSearchClause = [], limit?: number) {
   const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, query);
-  const items = await Actions.scan(tableName, filterExpression, expressionAttributeValues, limit);
+  const items = await Actions.scan(resolveTableNameActual(tableName), filterExpression, expressionAttributeValues, limit);
   if (items instanceof Array) {
     return items.map((item) => ensurePrimitiveDynamoDBRecord(item));
   }
@@ -35,7 +36,7 @@ export async function scan(tableName: string, query: DDBSearchClause = [], limit
  */
 export async function query(tableName: string, searchClause: DDBSearchClause, limit?: number) {
   const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, searchClause);
-  const items = await Actions.query(tableName, filterExpression, "", expressionAttributeValues);
+  const items = await Actions.query(resolveTableNameActual(tableName), filterExpression, "", expressionAttributeValues);
   if (items instanceof Array) {
     return items.map((item) => ensurePrimitiveDynamoDBRecord(item));
   }
@@ -92,7 +93,7 @@ export async function searchOne(tableName: string, searchClause: DDBSearchClause
 export async function getItem(tableName: string, key: LooseDynamoDBRecord) {
   let item;
   try {
-    item = await Actions.getItem(tableName, await resolveDynamoDBKey(tableName, key));
+    item = await Actions.getItem(resolveTableNameActual(tableName), await resolveDynamoDBKey(tableName, key));
   } catch (error) {
     /* ignore */
   }
@@ -120,7 +121,7 @@ export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
     }
 
     // Updates
-    await Actions.updateItem(tableName, key, updateExpression, expressionAttributeValues);
+    await Actions.updateItem(resolveTableNameActual(tableName), key, updateExpression, expressionAttributeValues);
     return {
       ...itemActual,
       ...updateableItem,
@@ -141,7 +142,7 @@ export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
     const insertableItem = await parseDynamoDBInputItem(tableName, item, "create");
 
     // Inserts
-    await Actions.putItem(tableName, await resolveDynamoDBKey(tableName, insertableItem, false));
+    await Actions.putItem(resolveTableNameActual(tableName), await resolveDynamoDBKey(tableName, insertableItem, false));
     return insertableItem;
   } catch (error) {
     throw new DatabaseError(error);
@@ -155,7 +156,7 @@ export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
  */
 export async function deleteItem(tableName: string, key: LooseDynamoDBRecord) {
   try {
-    return Actions.deleteItem(tableName, await resolveDynamoDBKey(tableName, key));
+    return Actions.deleteItem(resolveTableNameActual(tableName), await resolveDynamoDBKey(tableName, key));
   } catch (error) {
     throw new DatabaseError(error);
   }

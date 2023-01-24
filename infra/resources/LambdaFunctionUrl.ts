@@ -53,7 +53,7 @@ export function createLambdaFunction(stackConfig: StackConfig, lambdaFunctionExe
     layers: [nodeModulesLayer.arn],
     environment: {
       variables: {
-        DYNAMODB_TABLE_NAME: dynamoDBtableName,
+        DYNAMODB_TABLE_StatusInfo: dynamoDBtableName,
       },
     },
   });
