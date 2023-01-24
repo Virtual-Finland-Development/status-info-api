@@ -7,31 +7,37 @@ const operationsStore: Record<string, Record<string, OpenAPIV3.OperationObject>>
 // Documentation object
 let documentationStore: any;
 
-// Generate documentation
-const documentationBuilder = DocumentBuilder.initializeDocument({
-  openapi: "3.0.1",
-  info: {
-    title: "Status information API",
-    version: "1",
-    description: "API for status infos",
-    contact: {
-      name: "Virtual Finland",
-    },
-    license: {
-      name: "MIT",
-      url: "https://opensource.org/licenses/MIT",
-    },
-  },
-  paths: {},
-  components: {
-    securitySchemes: {
-      BearerAuth: {
-        type: "http",
-        scheme: "bearer",
+// Generate documentation (at runtime as test cases fail with the import for unknown reason)
+let documentationBuilder: DocumentBuilder;
+function getBuilder() {
+  if (!documentationBuilder) {
+    documentationBuilder = DocumentBuilder.initializeDocument({
+      openapi: "3.0.1",
+      info: {
+        title: "Status information API",
+        version: "1",
+        description: "API for status infos",
+        contact: {
+          name: "Virtual Finland",
+        },
+        license: {
+          name: "MIT",
+          url: "https://opensource.org/licenses/MIT",
+        },
       },
-    },
-  },
-});
+      paths: {},
+      components: {
+        securitySchemes: {
+          BearerAuth: {
+            type: "http",
+            scheme: "bearer",
+          },
+        },
+      },
+    });
+  }
+  return documentationBuilder;
+}
 
 /**
  *
@@ -39,8 +45,8 @@ const documentationBuilder = DocumentBuilder.initializeDocument({
  * @returns
  */
 function initialize(routerApp: any) {
-  documentationBuilder.generatePathsObject(routerApp);
-  documentationStore = documentationBuilder.build();
+  getBuilder().generatePathsObject(routerApp);
+  documentationStore = getBuilder().build();
 
   // Merge operation docs if any
   for (const path in operationsStore) {
@@ -75,7 +81,7 @@ function addOperationDoc(method: string, path: string, openapi: OpenAPIV3.Operat
  * @param schema
  */
 function addSchema(name: string, schema: OpenAPIV3.SchemaObject) {
-  documentationBuilder.schema(name, { component: schema });
+  getBuilder().schema(name, { component: schema });
 }
 
 /**
@@ -85,13 +91,13 @@ function addSchema(name: string, schema: OpenAPIV3.SchemaObject) {
  * @returns
  */
 function getSchema(schemaName: string, attributeName?: string): OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject {
-  const schemaRef = documentationBuilder.schema(schemaName);
+  const schemaRef = getBuilder().schema(schemaName);
   if (!schemaRef) {
     throw new Error(`Schema ${schemaName} not initialized`);
   }
 
   if (attributeName) {
-    const schema = documentationBuilder.schema(schemaName, { copy: true }) as OpenAPIV3.SchemaObject;
+    const schema = getBuilder().schema(schemaName, { copy: true }) as OpenAPIV3.SchemaObject;
     if (typeof schema.properties === "undefined") {
       throw new Error(`Schema ${schemaName} does not have properties`);
     }

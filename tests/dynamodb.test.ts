@@ -91,7 +91,7 @@ describe("DynamoDB", () => {
     expect(await DynamoDB.scan("StatusInfo")).toEqual([]); // Baseline test
 
     // Create
-    const item = await DynamoDB.putItem("StatusInfo", { statusName: "Test", statusValue: "SENT" });
+    const item = await DynamoDB.putItem("StatusInfo", { userId: "123", statusName: "Test", statusValue: "SENT" });
     expect(item.id).toBeDefined();
     expect(item.statusName).toBe("Test");
     expect(item.statusValue).toBe("SENT");

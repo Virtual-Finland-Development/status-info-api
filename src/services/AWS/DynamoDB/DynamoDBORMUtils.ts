@@ -291,12 +291,12 @@ export function isDynamoDBPrimitiveValue(value: any): value is DDBPrimitive {
  */
 export function generateUUIDv5(item: PrimitiveDynamoDBRecord, fields?: string[]): string {
   if (!fields || fields.length === 0) {
-    throw new Error("Hash error: fields are not defined");
+    throw new Error("uuidv5: generating error: fields are not defined");
   }
 
   const hashFields = fields.map((field) => {
     if (typeof item[field] === "undefined") {
-      throw new Error(`Hash error: field ${field} is not defined in item`);
+      throw new Error(`uuidv5: generating error: field ${field} is not defined in item`);
     }
     return item[field];
   });
