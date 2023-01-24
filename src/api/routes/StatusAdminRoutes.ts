@@ -1,4 +1,5 @@
 import DynamoDB from "../../lib/AWS/DynamoDB";
+import Documentation from "../utils/Documentation";
 import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 
 export default function (rootRoutePath: string) {
@@ -24,11 +25,7 @@ export default function (rootRoutePath: string) {
                 items: {
                   type: "object",
                   properties: {
-                    id: {
-                      type: "string",
-                      description: "Status info guid ID",
-                      example: "1234233-adasdad23-asr12d123-123123",
-                    },
+                    schema: Documentation.getSchema("StatusInfo"),
                   },
                 },
               },
@@ -54,6 +51,13 @@ export default function (rootRoutePath: string) {
       responses: {
         "200": {
           description: "Success",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/StatusInfo",
+              },
+            },
+          },
         },
       },
     },

@@ -55,4 +55,26 @@ export default {
       },
     ],
   },
+  openapi: {
+    schema: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+        },
+        statusName: {
+          type: "string",
+        },
+        statusValue: {
+          type: "string",
+        },
+        userEmail: {
+          type: "string",
+        },
+        updatedAt: {
+          type: "string",
+        },
+      },
+    },
+  },
 };

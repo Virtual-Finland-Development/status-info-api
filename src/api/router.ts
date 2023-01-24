@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import "express-async-errors";
 import * as OpenApiValidator from "express-openapi-validator";
+import DataManager from "../data/DataManager";
 import BaseRoutes from "./routes/BaseRoutes";
 import ProductizerRoutes from "./routes/ProductizerRoutes";
 import StatusAdminUIRoutes from "./routes/StatusAdminRoutes";
@@ -13,10 +14,10 @@ import Documentation from "./utils/Documentation";
 //
 const routerApp = express();
 const router = express.Router();
-
 router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
+DataManager.initialize();
 
 //
 // Routes

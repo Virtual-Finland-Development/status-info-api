@@ -20,6 +20,9 @@ type DynamoDBModel = {
     KeySchema: Array<{ AttributeName: string; KeyType: string }>;
     [key: string]: any;
   };
+  openapi?: {
+    schema: OpenAPIV3.SchemaObject;
+  };
 };
 
 type DDBSearchClause = Array<{ key: string; value: DDBPrimitive; operator?: DDBOperator }>;

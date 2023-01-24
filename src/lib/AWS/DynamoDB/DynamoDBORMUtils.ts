@@ -1,5 +1,6 @@
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
+import { getModel } from "../../../data/DataManager";
 import { ValidationError } from "../../../utils/exceptions";
 import { cloneItem } from "../../../utils/Transformations";
 import { DDBPrimitive, DDBSearchClause, DynamoDBModel, LooseDynamoDBRecord, PrimitiveDynamoDBRecord } from "./DynamoDBORMTypes";
@@ -10,13 +11,11 @@ import { DDBPrimitive, DDBSearchClause, DynamoDBModel, LooseDynamoDBRecord, Prim
  * @returns
  */
 export async function getSchema(tableName: string): Promise<DynamoDBModel["schema"]> {
-  const {
-    default: { schema },
-  } = await import(`../../../data/models/${tableName}`);
-  if (!schema) {
+  const model = await getModel(tableName);
+  if (!model) {
     throw new Error(`Could not find schema for table ${tableName}`);
   }
-  return schema;
+  return model.schema;
 }
 
 /**
