@@ -43,6 +43,7 @@ routerApp.use(
 
 // Handle non-panicing errors
 routerApp.use((err: any, req: any, res: any, next: any) => {
+  console.error("Received exception", err);
   res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,

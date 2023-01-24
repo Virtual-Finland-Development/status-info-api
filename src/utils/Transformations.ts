@@ -10,7 +10,10 @@ export function isObject(bob: any): boolean {
 }
 
 export function cloneItem(item: any): any {
-  return JSON.parse(JSON.stringify(item));
+  if (isObject(item) || item instanceof Array) {
+    return JSON.parse(JSON.stringify(item));
+  }
+  return item;
 }
 
 export function getEnumValues(enumObj: any): string[] {

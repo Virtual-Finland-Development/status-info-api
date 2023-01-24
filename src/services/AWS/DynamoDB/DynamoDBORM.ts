@@ -63,7 +63,6 @@ export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
     // Preps
     const updateableItem = await parseDynamoDBInputItem(tableName, item, "update");
     const { key, updateExpression, expressionAttributeValues } = await resolveDynamoDBUpdateItem(tableName, updateableItem);
-
     // Checks
     const itemActual = await getItem(tableName, key);
     if (!itemActual) {

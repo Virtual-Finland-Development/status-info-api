@@ -133,11 +133,14 @@ export async function resolveDynamoDBSearchClause(tableName: string, query: DDBS
  * @param updateItem
  * @returns
  */
-export async function resolveDynamoDBUpdateItem(tableName: string, updateItem: LooseDynamoDBRecord) {
+export async function resolveDynamoDBUpdateItem(tableName: string, updateItem: PrimitiveDynamoDBRecord) {
   const itemKey = await resolveDynamoDBKey(tableName, updateItem);
   const itemKeyNames = Object.keys(itemKey);
   const updateExpression = [];
   const expressionAttributeValues: any = {};
+
+  const schema = await getSchema(tableName);
+  mutateDynamoDBDefaultValues(schema, updateItem);
 
   for (const [key, value] of Object.entries(updateItem)) {
     if (itemKeyNames.includes(key)) {
@@ -183,6 +186,7 @@ export async function parseDynamoDBInputItem(tableName: string, item: PrimitiveD
   const primitiveItem = ensurePrimitiveDynamoDBRecord(item);
   const schema = await getSchema(tableName);
   mutateDynamoDBAutoFills(schema, primitiveItem, event);
+  mutateDynamoDBDefaultValues(schema, primitiveItem);
   validateDynamoDBValueUpdate(schema, primitiveItem);
   return primitiveItem;
 }
@@ -223,6 +227,23 @@ function mutateDynamoDBAutoFills(schema: DynamoDBModel["schema"], item: Primitiv
  *
  * @param schema
  * @param item
+ * @param event
+ */
+function mutateDynamoDBDefaultValues(schema: DynamoDBModel["schema"], item: PrimitiveDynamoDBRecord): void {
+  const currentEventDefaultAttributes = schema.AttributeDefinitions.filter((attributeDefinition) => typeof attributeDefinition._DefaultValue !== "undefined");
+
+  for (const defaultAttr of currentEventDefaultAttributes) {
+    const { AttributeName, _DefaultValue } = defaultAttr;
+    if (typeof item[AttributeName] === "undefined" && typeof _DefaultValue !== "undefined") {
+      item[AttributeName] = _DefaultValue;
+    }
+  }
+}
+
+/**
+ *
+ * @param schema
+ * @param item
  */
 function validateDynamoDBValueUpdate(schema: DynamoDBModel["schema"], item: PrimitiveDynamoDBRecord) {
   const needyAttributes = schema.AttributeDefinitions.filter((attributeDefinition) => attributeDefinition._AllowedValues instanceof Array);
@@ -244,5 +265,5 @@ function validateDynamoDBValueUpdate(schema: DynamoDBModel["schema"], item: Prim
  * @returns
  */
 export function isDynamoDBPrimitiveValue(value: any): value is DDBPrimitive {
-  return typeof value === "string" || typeof value === "number" || typeof value === "boolean";
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean" || typeof value === "undefined" || value === null;
 }
