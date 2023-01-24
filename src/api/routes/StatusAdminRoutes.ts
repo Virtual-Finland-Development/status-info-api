@@ -48,7 +48,19 @@ export default function (rootRoutePath: string) {
     },
     openapi: {
       summary: "Update status info",
-      description: "Update status info status value",
+      description: "Update status info value",
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
+              },
+            },
+          },
+        },
+      },
       responses: {
         "200": {
           description: "Success",
