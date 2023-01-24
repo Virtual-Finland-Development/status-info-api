@@ -30,7 +30,7 @@ export default function (rootRoutePath: string) {
       summary: "Add or update status info",
       description: "Productizer for users status info event",
       security: [{ BearerAuth: [] }],
-      //parameters: [{ in: "header", name: "Authorization", schema: { type: "string" }, required: true }],
+      parameters: [{ in: "header", name: "Authorization", schema: { type: "string" } }], // Show in Swagger UI
       requestBody: {
         content: {
           "application/json": {
