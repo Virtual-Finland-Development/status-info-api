@@ -34,7 +34,7 @@ jobs:
       - name: Test
         run: |
           npm run test
-      - name: prepare deployemnt
+      - name: prepare deployment
         run: |
           npm run build:infra
       - name: Deploy with Pulumi
