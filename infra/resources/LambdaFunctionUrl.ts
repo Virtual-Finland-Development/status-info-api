@@ -2,6 +2,7 @@ import * as aws from "@pulumi/aws";
 import * as awsnative from "@pulumi/aws-native";
 import { local } from "@pulumi/command";
 import * as pulumi from "@pulumi/pulumi";
+import { StackConfig } from "../types";
 
 export function createLambdaExecRole(stackConfig: StackConfig) {
   const lambdaExecRole = new awsnative.iam.Role(stackConfig.generateResourceName("lambdaExecRole"), {

@@ -2,7 +2,8 @@ import * as aws from "@pulumi/aws";
 import * as awsnative from "@pulumi/aws-native";
 
 import StatusAdminUIModel from "../../src/data/models/StatusInfo";
-import { transformModelToDynamoDBSchema } from "../../src/lib/AWS/DynamoDB/utils";
+import { transformModelToDynamoDBSchema } from "../../src/services/AWS/DynamoDB/DynamoDBORMUtils";
+import { StackConfig } from "../types";
 
 export function createDynamoDBTable(configuration: StackConfig, lambdaFunctionExecRole: awsnative.iam.Role) {
   const modelSchema = transformModelToDynamoDBSchema(StatusAdminUIModel);

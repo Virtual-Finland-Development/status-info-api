@@ -1,9 +1,6 @@
-export function createStackConfig(info: {
-  name: string;
-  stage: string;
-  project: string;
-  pulumiOrganization: string;
-}): StackConfig {
+import { StackConfig } from "./types";
+
+export function createStackConfig(info: { name: string; stage: string; project: string; pulumiOrganization: string }): StackConfig {
   return {
     name: info.name,
     stage: info.stage,

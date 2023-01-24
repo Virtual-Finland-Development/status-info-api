@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import DynamoDB from "../src/lib/AWS/DynamoDB";
+import DynamoDB from "../src/services/AWS/DynamoDB";
 const mockItems: any = [];
 
 describe("DynamoDB", () => {
@@ -91,10 +91,10 @@ describe("DynamoDB", () => {
     expect(await DynamoDB.scan("StatusInfo")).toEqual([]); // Baseline test
 
     // Create
-    const item = await DynamoDB.putItem("StatusInfo", { statusName: "Test", statusValue: "IN_PROGRESS" });
+    const item = await DynamoDB.putItem("StatusInfo", { statusName: "Test", statusValue: "SENT" });
     expect(item.id).toBeDefined();
     expect(item.statusName).toBe("Test");
-    expect(item.statusValue).toBe("IN_PROGRESS");
+    expect(item.statusValue).toBe("SENT");
 
     // Read
     const readItem = await DynamoDB.getItem("StatusInfo", { id: item.id });
@@ -103,11 +103,11 @@ describe("DynamoDB", () => {
     expect(readItem?.statusValue).toBe(item.statusValue);
 
     // Update
-    await DynamoDB.updateItem("StatusInfo", { id: item.id, statusValue: "COMPLETED" });
+    await DynamoDB.updateItem("StatusInfo", { id: item.id, statusValue: "READY" });
     const updateItem = await DynamoDB.getItem("StatusInfo", { id: item.id });
     expect(updateItem?.id).toBe(item.id);
     expect(updateItem?.statusName).toBe(item.statusName);
-    expect(updateItem?.statusValue).toBe("COMPLETED");
+    expect(updateItem?.statusValue).toBe("READY");
 
     // Delete
     await DynamoDB.deleteItem("StatusInfo", { id: item.id });

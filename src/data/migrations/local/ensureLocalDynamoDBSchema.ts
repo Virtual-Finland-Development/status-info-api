@@ -25,7 +25,7 @@ export default async function ensureLocalDynamoDBSchema() {
     console.log(`Table ${tableName} does not exist, creating it...`);
     await createTable(tableName, { ...defaultsForLocal, ...schema });
     console.log("Populating table with example data...");
-    await putItem(tableName, { id: "12345-qwerty-67890-asdfgh", statusName: "ExampleStatus", statusValue: "COMPLETED" });
+    await putItem(tableName, { id: "12345-qwerty-67890-asdfgh", statusName: "ExampleStatus", statusValue: "SENT" });
   }
 }
 

@@ -1,4 +1,4 @@
-type StackConfig = {
+export type StackConfig = {
   name: string;
   stage: string;
   project: string;
