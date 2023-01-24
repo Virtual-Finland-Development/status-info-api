@@ -53,9 +53,7 @@ export default function (rootRoutePath: string) {
           description: "Success",
           content: {
             "application/json": {
-              schema: {
-                $ref: "#/components/schemas/StatusInfo",
-              },
+              schema: Documentation.getSchema("StatusInfo"),
             },
           },
         },
