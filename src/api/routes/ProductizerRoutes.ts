@@ -49,12 +49,7 @@ export default function (rootRoutePath: string) {
           description: "Success",
           content: {
             "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  item: Documentation.getSchema("StatusInfo"),
-                },
-              },
+              schema: Documentation.getSchema("StatusInfo"),
             },
           },
         },

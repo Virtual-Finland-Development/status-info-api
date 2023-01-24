@@ -9,8 +9,8 @@ export default function (rootRoutePath: string) {
     path: "/statusinfos",
     method: "GET",
     async handler(req, res) {
-      const response = await DynamoDB.scan("StatusInfo");
-      res.send({ items: response });
+      const items = await DynamoDB.scan("StatusInfo");
+      res.send(items);
     },
     openapi: {
       summary: "Status infos",
@@ -42,8 +42,8 @@ export default function (rootRoutePath: string) {
     async handler(req, res) {
       const { id } = req.params;
       const { statusValue } = req.body;
-      const response = await DynamoDB.updateItem("StatusInfo", { id: id, statusValue: statusValue });
-      res.send({ item: response });
+      const item = await DynamoDB.updateItem("StatusInfo", { id: id, statusValue: statusValue });
+      res.send(item);
     },
     openapi: {
       summary: "Update status info",
@@ -66,8 +66,8 @@ export default function (rootRoutePath: string) {
     method: "DELETE",
     async handler(req, res) {
       const { id } = req.params;
-      const response = await DynamoDB.deleteItem("StatusInfo", { id: id });
-      res.send({ item: response });
+      await DynamoDB.deleteItem("StatusInfo", { id: id });
+      res.send();
     },
     openapi: {
       summary: "Delete status info",
