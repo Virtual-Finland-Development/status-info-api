@@ -25,3 +25,16 @@ export function getEnumValues(enumObj: any): string[] {
 export function trimSlashes(str: string): string {
   return str.replace(/^\/?|\/?$/g, "");
 }
+
+/**
+ *
+ * @param url
+ * @returns
+ */
+export function transformExpressUrlParamsToOpenAPI(url: string): string {
+  if (url.includes("/:")) {
+    url = url.replace(/:(\w+)\//gi, "{$1}/"); // replace: url/:id/action => url/{id}/action
+    url = url.replace(/:(\w+)$/gi, "{$1}"); // replace: url/:id => url/{id}
+  }
+  return url;
+}

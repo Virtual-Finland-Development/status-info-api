@@ -91,10 +91,10 @@ describe("DynamoDB", () => {
     expect(await DynamoDB.scan("StatusInfo")).toEqual([]); // Baseline test
 
     // Create
-    const item = await DynamoDB.putItem("StatusInfo", { statusName: "Test", statusValue: "In Progress" });
+    const item = await DynamoDB.putItem("StatusInfo", { statusName: "Test", statusValue: "IN_PROGRESS" });
     expect(item.id).toBeDefined();
     expect(item.statusName).toBe("Test");
-    expect(item.statusValue).toBe("In Progress");
+    expect(item.statusValue).toBe("IN_PROGRESS");
 
     // Read
     const readItem = await DynamoDB.getItem("StatusInfo", { id: item.id });
@@ -103,11 +103,11 @@ describe("DynamoDB", () => {
     expect(readItem?.statusValue).toBe(item.statusValue);
 
     // Update
-    await DynamoDB.updateItem("StatusInfo", { id: item.id, statusValue: "Complete" });
+    await DynamoDB.updateItem("StatusInfo", { id: item.id, statusValue: "COMPLETED" });
     const updateItem = await DynamoDB.getItem("StatusInfo", { id: item.id });
     expect(updateItem?.id).toBe(item.id);
     expect(updateItem?.statusName).toBe(item.statusName);
-    expect(updateItem?.statusValue).toBe("Complete");
+    expect(updateItem?.statusValue).toBe("COMPLETED");
 
     // Delete
     await DynamoDB.deleteItem("StatusInfo", { id: item.id });

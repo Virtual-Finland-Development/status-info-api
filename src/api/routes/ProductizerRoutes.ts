@@ -5,12 +5,12 @@ export default function (rootRoutePath: string) {
   routes.addRoute({
     path: "/",
     method: "GET",
-    handler: (req, res) => {
+    handler(req, res) {
       res.send("OK Productizers");
     },
     openapi: {
       summary: "Dummy response to productizers base route path",
-      description: "No impolemetations yet",
+      description: "No implementations yet",
       responses: {
         "200": {
           description: "Success",

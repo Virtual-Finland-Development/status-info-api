@@ -1,29 +1,82 @@
-import express from "express";
 import DynamoDB from "../../lib/AWS/DynamoDB";
-const router = express.Router();
+import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 
-router.put("/statusinfos", async (req, res) => {
-  //const response = await DynamoDB.putItem("StatusInfo", { userId: "bizz", userEmail: "bizz@bazz" });
-  //res.send({ bazz: response });
-  throw new Error("Not implemented");
-});
+export default function (rootRoutePath: string) {
+  const routes = new OpenAPIExpressRoutes(rootRoutePath);
 
-router.get("/statusinfos", async (req, res) => {
-  const response = await DynamoDB.scan("StatusInfo");
-  res.send({ items: response });
-});
+  routes.addRoute({
+    path: "/statusinfos",
+    method: "GET",
+    async handler(req, res) {
+      const response = await DynamoDB.scan("StatusInfo");
+      res.send({ items: response });
+    },
+    openapi: {
+      summary: "Status infos",
+      description: "Get all status infos",
+      responses: {
+        "200": {
+          description: "Success",
+          content: {
+            "application/json": {
+              schema: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "string",
+                      description: "Status info guid ID",
+                      example: "1234233-adasdad23-asr12d123-123123",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
-router.post("/statusinfos/:id", async (req, res) => {
-  const { id } = req.params;
-  const { statusName, statusValue } = req.body;
-  const response = await DynamoDB.updateItem("StatusInfo", { id: id, statusName: "ExampleStatus", statusValue: "BAZZ" });
-  res.send({ item: response });
-});
+  routes.addRoute({
+    path: "/statusinfos/:id",
+    method: "POST",
+    async handler(req, res) {
+      const { id } = req.params;
+      const { statusValue } = req.body;
+      const response = await DynamoDB.updateItem("StatusInfo", { id: id, statusValue: statusValue });
+      res.send({ item: response });
+    },
+    openapi: {
+      summary: "Update status info",
+      description: "Update status info status value",
+      responses: {
+        "200": {
+          description: "Success",
+        },
+      },
+    },
+  });
 
-router.delete("/statusinfos/:id", async (req, res) => {
-  const { id } = req.params;
-  const response = await DynamoDB.deleteItem("StatusInfo", { id: id });
-  res.send({ item: response });
-});
+  routes.addRoute({
+    path: "/statusinfos/:id",
+    method: "DELETE",
+    async handler(req, res) {
+      const { id } = req.params;
+      const response = await DynamoDB.deleteItem("StatusInfo", { id: id });
+      res.send({ item: response });
+    },
+    openapi: {
+      summary: "Delete status info",
+      description: "Delete status info",
+      responses: {
+        "200": {
+          description: "Success",
+        },
+      },
+    },
+  });
 
-export default router;
+  return [rootRoutePath, routes.getRouter()];
+}

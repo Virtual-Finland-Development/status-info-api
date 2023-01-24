@@ -1,12 +1,11 @@
 import { DocumentBuilder } from "express-openapi-generator";
 import { OpenAPIV3 } from "openapi-types";
-import { trimSlashes } from "../../utils/Transformations";
 
 // Operations handle
-const builtOperationDocs: Record<string, Record<string, OpenAPIV3.OperationObject>> = {};
+const operationsStore: Record<string, Record<string, OpenAPIV3.OperationObject>> = {};
 
 // Documentation object
-let builtDocumentation: any;
+let documentationStore: any;
 
 // Generate documentation
 const documentationBuilder = DocumentBuilder.initializeDocument({
@@ -29,36 +28,35 @@ const documentationBuilder = DocumentBuilder.initializeDocument({
 export default {
   initialize(routerApp: any) {
     documentationBuilder.generatePathsObject(routerApp);
-    builtDocumentation = documentationBuilder.build();
+    documentationStore = documentationBuilder.build();
 
     // Merge operation docs if any
-    for (const path in builtOperationDocs) {
-      for (const method in builtOperationDocs[path]) {
-        if (typeof builtDocumentation.paths[path] !== "undefined") {
-          builtDocumentation.paths[path][method] = {
-            ...builtDocumentation.paths[path][method],
-            ...builtOperationDocs[path][method],
+    for (const path in operationsStore) {
+      for (const method in operationsStore[path]) {
+        if (typeof documentationStore.paths[path] !== "undefined") {
+          documentationStore.paths[path][method] = {
+            ...documentationStore.paths[path][method],
+            ...operationsStore[path][method],
           };
         }
       }
     }
-    return builtDocumentation;
+    return documentationStore;
   },
   addOperationDoc(method: string, path: string, openapi: OpenAPIV3.OperationObject) {
-    const trimmedPath = `/${trimSlashes(path)}`;
-    if (typeof builtOperationDocs[trimmedPath] === "undefined") {
-      builtOperationDocs[trimmedPath] = {};
+    if (typeof operationsStore[path] === "undefined") {
+      operationsStore[path] = {};
     }
-    builtOperationDocs[trimmedPath][method] = openapi;
+    operationsStore[path][method] = openapi;
   },
   asObject() {
-    if (!builtDocumentation) {
+    if (!documentationStore) {
       throw new Error("Documentation has not been generated yet");
     }
-    return builtDocumentation;
+    return documentationStore;
   },
   getSwaggerHtml(openApiDocUrl: string) {
-    if (!builtDocumentation) {
+    if (!documentationStore) {
       throw new Error("Documentation has not been generated yet");
     }
     return `

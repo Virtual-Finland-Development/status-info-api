@@ -22,7 +22,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 // Routes
 //
 router.use(...BaseRoutes("/"));
-router.use("/status-admin", StatusAdminUIRoutes);
+router.use(...StatusAdminUIRoutes("/status-admin"));
 router.use(...ProductizerRoutes("/productizers"));
 routerApp.use("/", router);
 
