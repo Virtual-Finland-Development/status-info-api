@@ -1,5 +1,6 @@
 import * as aws from "@pulumi/aws";
 import * as awsnative from "@pulumi/aws-native";
+import * as pulumi from "@pulumi/pulumi";
 
 import StatusAdminUIModel from "../../src/data/models/StatusInfo";
 import { transformModelToDynamoDBSchema } from "../../src/services/AWS/DynamoDB/DynamoDBORMUtils";
@@ -51,7 +52,7 @@ export function createDynamoDBTable(configuration: StackConfig, lambdaFunctionEx
 
   // Attach to role
   new aws.iam.RolePolicyAttachment(configuration.generateResourceName("dynamoDBPolicyAttachment"), {
-    role: lambdaFunctionExecRole.arn,
+    role: pulumi.interpolate`${lambdaFunctionExecRole.roleName}`,
     policyArn: dynamoDBPolicy.arn,
   });
 
