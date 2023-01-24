@@ -60,19 +60,25 @@ export default {
       type: "object",
       properties: {
         id: {
+          description: "auto-generated uuid",
           type: "string",
         },
         statusName: {
+          description: "name of the status",
           type: "string",
         },
         statusValue: {
+          description: "value of the status",
           type: "string",
         },
         userEmail: {
+          description: "email of the user",
           type: "string",
         },
         updatedAt: {
+          description: "auto-generated timestamp",
           type: "string",
+          format: "date-time",
         },
       },
     },
