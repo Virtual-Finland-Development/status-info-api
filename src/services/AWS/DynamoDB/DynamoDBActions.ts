@@ -27,7 +27,7 @@ import { DynamoDBRecord } from "./DynamoDBORMTypes";
 export async function query(tableName: string, keyConditionExpression: string, filterExpression: string, expressionAttributeValues: any) {
   const params = {
     KeyConditionExpression: keyConditionExpression,
-    FilterExpression: filterExpression,
+    //FilterExpression: filterExpression,
     ExpressionAttributeValues: expressionAttributeValues,
     //ProjectionExpression: "Episode, Title, Subtitle",
     TableName: tableName,
@@ -108,6 +108,7 @@ export async function putItem(tableName: string, item: DynamoDBRecord) {
   const params = {
     TableName: tableName,
     Item: item,
+    ConditionExpression: "attribute_not_exists(pk)",
   };
   await ddbDocClient.send(new PutItemCommand(params));
 }

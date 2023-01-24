@@ -1,7 +1,14 @@
 import { DatabaseError } from "../../../utils/exceptions";
 import * as Actions from "./DynamoDBActions";
 import { DDBSearchClause, LooseDynamoDBRecord } from "./DynamoDBORMTypes";
-import { ensurePrimitiveDynamoDBRecord, parseDynamoDBInputItem, resolveDynamoDBKey, resolveDynamoDBSearchClause, resolveDynamoDBUpdateItem } from "./DynamoDBORMUtils";
+import {
+  ensurePrimitiveDynamoDBRecord,
+  parseDynamoDBInputItem,
+  resolveDynamoDBKey,
+  resolveDynamoDBSearchClause,
+  resolveDynamoDBUpdateItem,
+  resolveQueryableSearch,
+} from "./DynamoDBORMUtils";
 
 /**
  *
@@ -23,14 +30,57 @@ export async function scan(tableName: string, query: DDBSearchClause = [], limit
  *
  * @param tableName
  * @param query
+ * @param limit
  * @returns
  */
-export async function findOne(tableName: string, query: DDBSearchClause) {
-  const items = await scan(tableName, query, 1);
+export async function query(tableName: string, searchClause: DDBSearchClause, limit?: number) {
+  const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, searchClause);
+  const items = await Actions.query(tableName, filterExpression, "", expressionAttributeValues);
+  if (items instanceof Array) {
+    return items.map((item) => ensurePrimitiveDynamoDBRecord(item));
+  }
+  return [];
+}
+
+/**
+ *
+ * @param tableName
+ * @param query
+ * @returns
+ */
+export async function scanOne(tableName: string, searchClause: DDBSearchClause) {
+  const items = await scan(tableName, searchClause, 1);
   if (items.length === 0) {
     return null;
   }
   return items[0];
+}
+
+/**
+ *
+ * @param tableName
+ * @param query
+ * @returns
+ */
+export async function queryOne(tableName: string, searchClause: DDBSearchClause) {
+  const items = await query(tableName, searchClause, 1);
+  if (items.length === 0) {
+    return null;
+  }
+  return items[0];
+}
+
+/**
+ *
+ * @param tableName
+ * @param searchClause
+ */
+export async function searchOne(tableName: string, searchClause: DDBSearchClause) {
+  const queryableSearch = await resolveQueryableSearch(tableName, searchClause);
+  if (queryableSearch.length === 0) {
+    return scanOne(tableName, searchClause);
+  }
+  return queryOne(tableName, queryableSearch);
 }
 
 /**

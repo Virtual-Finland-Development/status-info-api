@@ -14,16 +14,19 @@ export default function (rootRoutePath: string) {
       const { authorization } = req.headers;
       const { userId, userEmail } = await Authorizer.getAuthorization(authorization); // throws
 
-      let existingStatusInfo = await DynamoDB.findOne("StatusInfo", [
+      let existingStatusInfo = await DynamoDB.searchOne("StatusInfo", [
         { key: "userId", value: userId },
         { key: "statusName", value: statusName },
       ]);
+
       if (existingStatusInfo) {
-        await DynamoDB.updateItem("StatusInfo", { id: existingStatusInfo.id, statusValue: statusValue });
+        existingStatusInfo = await DynamoDB.updateItem("StatusInfo", { id: existingStatusInfo.id, statusValue: statusValue });
+        console.debug("Updated existing status info", existingStatusInfo);
         return res.send({ item: existingStatusInfo });
       }
 
       const item = await DynamoDB.putItem("StatusInfo", { userId: userId, userEmail: userEmail, statusName: statusName, statusValue: statusValue });
+      console.debug("Created new status info", item);
       return res.send({ item: item });
     },
     openapi: {
