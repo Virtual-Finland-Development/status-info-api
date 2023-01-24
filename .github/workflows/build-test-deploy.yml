@@ -34,6 +34,9 @@ jobs:
       - name: Test
         run: |
           npm run test
+      - name: prepare deployemnt
+        run: |
+          npm run build:infra
       - name: Deploy with Pulumi
         id: pulumi
         uses: pulumi/actions@v3

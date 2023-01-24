@@ -4,12 +4,13 @@
   "description": "",
   "scripts": {
     "build": "tsc",
+    "build:infra": "mkdir -p infra/.build && cp package.json infra/.build && cp package-lock.json infra/.build && npm ci --omit=dev --prefix infra/.build",
     "start": "nodemon --delay 80ms --watch 'src' -e 'ts'  --exec \"npm run build && npm run migrate-local && npm run serve\"",
     "migrate-local": "npx ts-node src/data/migrations/local/ensureLocalDynamoDBSchema.ts",
     "serve": "serverless offline --config ./serverless-offline.yml",
     "watch": "tsc -w",
     "test": "vitest",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist infra/.build"
   },
   "author": "",
   "license": "MIT",

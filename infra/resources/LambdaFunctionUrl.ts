@@ -35,7 +35,7 @@ export function createLambdaFunction(stackConfig: StackConfig, lambdaFunctionExe
   const layerName = stackConfig.generateResourceName("dependencies-layer");
   const nodeModulesLayer = new aws.lambda.LayerVersion(layerName, {
     code: new pulumi.asset.AssetArchive({
-      "./nodejs/node_modules": new pulumi.asset.FileArchive("../node_modules"),
+      "./nodejs/node_modules": new pulumi.asset.FileArchive("./.build/node_modules"),
     }),
     compatibleRuntimes: [aws.lambda.Runtime.NodeJS18dX],
     layerName: layerName,
