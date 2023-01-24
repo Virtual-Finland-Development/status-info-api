@@ -23,12 +23,7 @@ export default function (rootRoutePath: string) {
             "application/json": {
               schema: {
                 type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    schema: Documentation.getSchema("StatusInfo"),
-                  },
-                },
+                items: Documentation.getSchema("StatusInfo"),
               },
             },
           },
