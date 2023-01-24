@@ -16,7 +16,7 @@ export function cloneItem(item: any): any {
   return item;
 }
 
-export function getEnumValues(enumObj: any): string[] {
+export function getEnumKeys(enumObj: any): string[] {
   if (!isObject(enumObj)) {
     throw new Error("Expected an enum-object");
   }
