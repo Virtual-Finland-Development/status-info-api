@@ -22,6 +22,20 @@ export async function scan(tableName: string, query: DDBSearchClause = [], limit
 /**
  *
  * @param tableName
+ * @param query
+ * @returns
+ */
+export async function findOne(tableName: string, query: DDBSearchClause) {
+  const items = await scan(tableName, query, 1);
+  if (items.length === 0) {
+    return null;
+  }
+  return items[0];
+}
+
+/**
+ *
+ * @param tableName
  * @param key - { id: "bazz" } or { id: { S: "bazz" } }
  * @returns
  */

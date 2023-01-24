@@ -1,5 +1,5 @@
 import Documentation from "../api/utils/Documentation";
-import { DynamoDBModel } from "../lib/AWS/DynamoDB/DynamoDBORMTypes";
+import { DynamoDBModel } from "../services/AWS/DynamoDB/DynamoDBORMTypes";
 
 import { default as StatusInfo } from "./models/StatusInfo";
 

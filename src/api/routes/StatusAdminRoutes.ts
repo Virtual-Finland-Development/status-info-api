@@ -1,4 +1,4 @@
-import DynamoDB from "../../lib/AWS/DynamoDB";
+import DynamoDB from "../../services/AWS/DynamoDB";
 import Documentation from "../utils/Documentation";
 import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 

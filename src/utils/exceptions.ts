@@ -25,3 +25,6 @@ export class DatabaseError extends AppError {}
 export class ValidationError extends AppError {
   status = 422;
 }
+export class AccessDeniedError extends AppError {
+  status = 403;
+}

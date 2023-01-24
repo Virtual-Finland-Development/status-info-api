@@ -19,6 +19,7 @@
     "@pulumi/command": "^0.7.0",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.15",
+    "@types/jsonwebtoken": "^9.0.1",
     "@types/uuid": "^9.0.0",
     "eslint": "^8.32.0",
     "nodemon": "^2.0.20",
@@ -39,6 +40,7 @@
     "express-async-errors": "^3.1.1",
     "express-openapi-generator": "^1.2.0",
     "express-openapi-validator": "^5.0.1",
+    "jsonwebtoken": "^9.0.0",
     "openapi-types": "^12.1.0",
     "uuid": "^9.0.0"
   }

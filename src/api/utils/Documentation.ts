@@ -23,6 +23,14 @@ const documentationBuilder = DocumentBuilder.initializeDocument({
     },
   },
   paths: {},
+  components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: "http",
+        scheme: "bearer",
+      },
+    },
+  },
 });
 
 /**
@@ -72,14 +80,28 @@ function addSchema(name: string, schema: OpenAPIV3.SchemaObject) {
 
 /**
  *
- * @param name
+ * @param schemaName
+ * @param attributeName
  * @returns
  */
-function getSchema(name: string): OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject {
-  const schemaRef = documentationBuilder.schema(name);
+function getSchema(schemaName: string, attributeName?: string): OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject {
+  const schemaRef = documentationBuilder.schema(schemaName);
   if (!schemaRef) {
-    throw new Error(`Schema ${name} not initialized`);
+    throw new Error(`Schema ${schemaName} not initialized`);
   }
+
+  if (attributeName) {
+    const schema = documentationBuilder.schema(schemaName, { copy: true }) as OpenAPIV3.SchemaObject;
+    if (typeof schema.properties === "undefined") {
+      throw new Error(`Schema ${schemaName} does not have properties`);
+    }
+    const attributeSchema = schema.properties[attributeName];
+    if (!attributeSchema) {
+      throw new Error(`Schema ${schemaName} does not have attribute ${attributeName}`);
+    }
+    return attributeSchema;
+  }
+
   return schemaRef;
 }
 

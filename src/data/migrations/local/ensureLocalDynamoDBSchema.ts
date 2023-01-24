@@ -1,6 +1,6 @@
-import { checkIfTableExists, createTable } from "../../../lib/AWS/DynamoDB/DynamoDBActions";
-import { putItem } from "../../../lib/AWS/DynamoDB/DynamoDBORM";
-import { transformModelToDynamoDBSchema } from "../../../lib/AWS/DynamoDB/DynamoDBORMUtils";
+import { checkIfTableExists, createTable } from "../../../services/AWS/DynamoDB/DynamoDBActions";
+import { putItem } from "../../../services/AWS/DynamoDB/DynamoDBORM";
+import { transformModelToDynamoDBSchema } from "../../../services/AWS/DynamoDB/DynamoDBORMUtils";
 import Settings from "../../../utils/Settings";
 
 import StatusInfoModel from "../../models/StatusInfo";
