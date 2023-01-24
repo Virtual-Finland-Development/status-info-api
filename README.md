@@ -1,4 +1,4 @@
-# Statusinfo API
+# Status information API
 
 ## Usage
 

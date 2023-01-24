@@ -11,9 +11,9 @@ let documentationStore: any;
 const documentationBuilder = DocumentBuilder.initializeDocument({
   openapi: "3.0.1",
   info: {
-    title: "Statusinfo API",
+    title: "Status information API",
     version: "1",
-    description: "API for Statusinfo",
+    description: "API for status infos",
     contact: {
       name: "Virtual Finland",
     },
