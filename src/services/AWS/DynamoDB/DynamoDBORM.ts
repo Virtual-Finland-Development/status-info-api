@@ -1,6 +1,6 @@
 import { DatabaseError } from "../../../utils/exceptions";
 import * as Actions from "./DynamoDBActions";
-import { DDBSearchClause, LooseDynamoDBRecord } from "./DynamoDBORMTypes";
+import { DDBSearchClause, LooseDynamoDBRecord, PrimitiveDynamoDBRecord } from "./DynamoDBORMTypes";
 import {
   ensurePrimitiveDynamoDBRecord,
   parseDynamoDBInputItem,
@@ -17,7 +17,7 @@ import {
  * @param limit
  * @returns
  */
-export async function scan(tableName: string, query: DDBSearchClause = [], limit?: number) {
+export async function scan(tableName: string, query: DDBSearchClause = [], limit?: number): Promise<Array<PrimitiveDynamoDBRecord>> {
   const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, query);
   const items = await Actions.scan(tableName, filterExpression, expressionAttributeValues, limit);
   if (items instanceof Array) {
@@ -33,7 +33,7 @@ export async function scan(tableName: string, query: DDBSearchClause = [], limit
  * @param limit
  * @returns
  */
-export async function query(tableName: string, searchClause: DDBSearchClause, limit?: number) {
+export async function query(tableName: string, searchClause: DDBSearchClause, limit?: number): Promise<Array<PrimitiveDynamoDBRecord>> {
   const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, searchClause);
   const items = await Actions.query(tableName, filterExpression, "", expressionAttributeValues);
   if (items instanceof Array) {

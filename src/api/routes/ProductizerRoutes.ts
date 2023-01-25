@@ -3,31 +3,30 @@ import DynamoDB from "../../services/AWS/DynamoDB";
 import Documentation from "../utils/Documentation";
 import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 
+function transformStatusInfo(item: any) {
+  return { statusName: item.statusName, statusValue: item.statusValue };
+}
+
 export default function (rootRoutePath: string) {
   const routes = new OpenAPIExpressRoutes(rootRoutePath);
 
   routes.addRoute({
-    path: "/receive-status-info",
+    path: "/test/lsipii/User/StatusInfo",
     method: "POST",
     async handler(req, res) {
-      const { statusName, statusValue } = req.body;
+      const { statusName } = req.body;
       const { authorization } = req.headers;
-      const { userId, userEmail } = await Authorizer.getAuthorization(authorization); // throws
+      const { userId } = await Authorizer.getAuthorization(authorization); // throws
 
-      let existingStatusInfo = await DynamoDB.searchOne("StatusInfo", [
+      const statusInfo = await DynamoDB.searchOne("StatusInfo", [
         { key: "userId", value: userId },
         { key: "statusName", value: statusName },
       ]);
 
-      if (existingStatusInfo) {
-        existingStatusInfo = await DynamoDB.updateItem("StatusInfo", { id: existingStatusInfo.id, statusValue: statusValue });
-        console.debug("Updated existing status info", existingStatusInfo);
-        return res.send({ item: existingStatusInfo });
+      if (statusInfo) {
+        return res.send(transformStatusInfo(statusInfo));
       }
-
-      const item = await DynamoDB.putItem("StatusInfo", { userId: userId, userEmail: userEmail, statusName: statusName, statusValue: statusValue });
-      console.debug("Created new status info", item);
-      return res.send({ item: item });
+      return res.send();
     },
     openapi: {
       summary: "Add or update status info",
@@ -52,7 +51,89 @@ export default function (rootRoutePath: string) {
           description: "Success",
           content: {
             "application/json": {
-              schema: Documentation.getSchema("StatusInfo"),
+              schema: {
+                type: "object",
+                properties: {
+                  statusName: Documentation.getSchema("StatusInfo", "statusName"),
+                  statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
+                },
+              },
+            },
+          },
+        },
+        "403": {
+          description: "Access denied",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  message: {
+                    type: "string",
+                    example: "Access denied",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  routes.addRoute({
+    path: "/test/lsipii/User/StatusInfo/Write",
+    method: "POST",
+    async handler(req, res) {
+      const { statusName, statusValue } = req.body;
+      const { authorization } = req.headers;
+      const { userId, userEmail } = await Authorizer.getAuthorization(authorization); // throws
+
+      let existingStatusInfo = await DynamoDB.searchOne("StatusInfo", [
+        { key: "userId", value: userId },
+        { key: "statusName", value: statusName },
+      ]);
+
+      if (existingStatusInfo) {
+        existingStatusInfo = await DynamoDB.updateItem("StatusInfo", { id: existingStatusInfo.id, statusValue: statusValue });
+        console.debug("Updated existing status info", existingStatusInfo);
+        return res.send(transformStatusInfo(existingStatusInfo));
+      }
+
+      const item = await DynamoDB.putItem("StatusInfo", { userId: userId, userEmail: userEmail, statusName: statusName, statusValue: statusValue });
+      console.debug("Created new status info", item);
+      return res.send(transformStatusInfo(item));
+    },
+    openapi: {
+      summary: "Add or update status info",
+      description: "Productizer for users status info event",
+      security: [{ BearerAuth: [] }],
+      parameters: [{ in: "header", name: "Authorization", schema: { type: "string" } }], // Show in Swagger UI
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                statusName: Documentation.getSchema("StatusInfo", "statusName"),
+                statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Success",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  statusName: Documentation.getSchema("StatusInfo", "statusName"),
+                  statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
+                },
+              },
             },
           },
         },
