@@ -73,6 +73,7 @@ const StatusInfo: DynamoDBModel = {
         id: {
           description: "auto-generated uuidv5(userId, statusName) hash",
           type: "string",
+          example: "qwerty-12345-zappa-fr4nk-123456789",
         },
         statusName: {
           description: "programmic name of the status",
@@ -88,10 +89,12 @@ const StatusInfo: DynamoDBModel = {
         userId: {
           description: "user identification code",
           type: "string",
+          example: "djregl-12345-mnccn-se4ax-123456789",
         },
         userEmail: {
           description: "email of the user",
           type: "string",
+          example: "test@mail.localhost",
         },
         createdAt: {
           description: "auto-generated timestamp: create time",
