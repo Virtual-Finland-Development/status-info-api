@@ -30,8 +30,8 @@ export default function (rootRoutePath: string) {
       return res.send();
     },
     openapi: {
-      summary: "Retrieve users status info",
-      description: "Productizer for users status info event",
+      summary: "Retrieve user owned status info",
+      description: "Productizer for user owned status info event",
       security: [{ BearerAuth: [] }],
       parameters: [{ in: "header", name: "Authorization", schema: { type: "string" } }], // Show in Swagger UI
       requestBody: {
@@ -56,22 +56,6 @@ export default function (rootRoutePath: string) {
                 properties: {
                   statusName: Documentation.getSchema("StatusInfo", "statusName"),
                   statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
-                },
-              },
-            },
-          },
-        },
-        "403": {
-          description: "Access denied",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "Access denied",
-                  },
                 },
               },
             },
@@ -108,7 +92,7 @@ export default function (rootRoutePath: string) {
     },
     openapi: {
       summary: "Add or update status info",
-      description: "Productizer for users status info event",
+      description: "Productizer for user owned status info event",
       security: [{ BearerAuth: [] }],
       parameters: [{ in: "header", name: "Authorization", schema: { type: "string" } }], // Show in Swagger UI
       requestBody: {
@@ -134,22 +118,6 @@ export default function (rootRoutePath: string) {
                 properties: {
                   statusName: Documentation.getSchema("StatusInfo", "statusName"),
                   statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
-                },
-              },
-            },
-          },
-        },
-        "403": {
-          description: "Access denied",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "Access denied",
-                  },
                 },
               },
             },
