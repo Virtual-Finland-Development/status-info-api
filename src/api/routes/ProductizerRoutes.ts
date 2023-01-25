@@ -69,6 +69,7 @@ export default function (rootRoutePath: string) {
                   statusName: Documentation.getSchema("StatusInfo", "statusName"),
                   statusLabel: {
                     type: "string",
+                    example: "Sent",
                   },
                   statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
                 },
@@ -134,6 +135,7 @@ export default function (rootRoutePath: string) {
                   statusName: Documentation.getSchema("StatusInfo", "statusName"),
                   statusLabel: {
                     type: "string",
+                    example: "Sent",
                   },
                   statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
                 },
