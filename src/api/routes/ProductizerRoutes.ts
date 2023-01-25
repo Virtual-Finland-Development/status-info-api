@@ -18,18 +18,19 @@ export default function (rootRoutePath: string) {
       const { authorization } = req.headers;
       const { userId } = await Authorizer.getAuthorization(authorization); // throws
 
-      const statusInfo = await DynamoDB.searchOne("StatusInfo", [
+      const item = await DynamoDB.searchOne("StatusInfo", [
         { key: "userId", value: userId },
         { key: "statusName", value: statusName },
       ]);
 
-      if (statusInfo) {
+      if (item) {
+        const statusInfo = transformStatusInfo(item);
         return res.send(transformStatusInfo(statusInfo));
       }
       return res.send();
     },
     openapi: {
-      summary: "Add or update status info",
+      summary: "Retrieve users status info",
       description: "Productizer for users status info event",
       security: [{ BearerAuth: [] }],
       parameters: [{ in: "header", name: "Authorization", schema: { type: "string" } }], // Show in Swagger UI
@@ -40,7 +41,6 @@ export default function (rootRoutePath: string) {
               type: "object",
               properties: {
                 statusName: Documentation.getSchema("StatusInfo", "statusName"),
-                statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
               },
             },
           },
@@ -96,13 +96,15 @@ export default function (rootRoutePath: string) {
 
       if (existingStatusInfo) {
         existingStatusInfo = await DynamoDB.updateItem("StatusInfo", { id: existingStatusInfo.id, statusValue: statusValue });
-        console.debug("Updated existing status info", existingStatusInfo);
-        return res.send(transformStatusInfo(existingStatusInfo));
+        const statusInfo = transformStatusInfo(existingStatusInfo);
+        console.debug("Updated existing status info", statusInfo);
+        return res.send(statusInfo);
       }
 
       const item = await DynamoDB.putItem("StatusInfo", { userId: userId, userEmail: userEmail, statusName: statusName, statusValue: statusValue });
-      console.debug("Created new status info", item);
-      return res.send(transformStatusInfo(item));
+      const statusInfo = transformStatusInfo(item);
+      console.debug("Created new status info", statusInfo);
+      return res.send(transformStatusInfo(statusInfo));
     },
     openapi: {
       summary: "Add or update status info",
