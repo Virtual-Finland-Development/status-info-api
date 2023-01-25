@@ -43,7 +43,7 @@ export function createDynamoDBTable(configuration: StackConfig, lambdaFunctionEx
         Statement: [
           {
             Effect: "Allow",
-            Action: ["dynamodb:UpdateItem", "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:DescribeTable", "dynamodb:Scan"],
+            Action: ["dynamodb:UpdateItem", "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:DescribeTable", "dynamodb:Scan", "dynamodb:Query"],
             Resource: [arn],
           },
         ],
