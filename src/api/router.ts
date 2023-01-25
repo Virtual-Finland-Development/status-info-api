@@ -6,7 +6,7 @@ import * as OpenApiValidator from "express-openapi-validator";
 import DataManager from "../data/DataManager";
 import BaseRoutes from "./routes/BaseRoutes";
 import ProductizerRoutes from "./routes/ProductizerRoutes";
-import StatusAdminUIRoutes from "./routes/StatusAdminRoutes";
+import StatusAdminUIRoutes from "./routes/status-admin/";
 import Documentation from "./utils/Documentation";
 
 //

@@ -1,21 +1,24 @@
-import { KnownStatusValues } from "../../data/models/StatusInfo";
-import DynamoDB from "../../services/AWS/DynamoDB";
-import Documentation from "../utils/Documentation";
-import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
+import { KnownStatusValues } from "../../../data/models/StatusInfo";
+import DynamoDB from "../../../services/AWS/DynamoDB";
+import Documentation from "../../utils/Documentation";
+import OpenAPIExpressRoutes from "../../utils/OpenAPIExpressRoutes";
+import Authenticator from "./authentication/Authenticator";
 
-export default function (rootRoutePath: string) {
-  const routes = new OpenAPIExpressRoutes(rootRoutePath);
-
+export default function (routes: OpenAPIExpressRoutes, pathPrefix?: string) {
   routes.addRoute({
     path: "/status-infos",
+    pathPrefix: pathPrefix,
     method: "GET",
     async handler(req, res) {
+      const { authorization } = req.headers;
+      await Authenticator.verifyLocalAppToken(authorization);
       const items = await DynamoDB.scan("StatusInfo");
       res.send(items);
     },
     openapi: {
       summary: "Retrieve status infos",
       description: "Get all status infos",
+      security: [{ BearerAuth: ["status-admin"] }],
       responses: {
         "200": {
           description: "Success",
@@ -38,12 +41,16 @@ export default function (rootRoutePath: string) {
     async handler(req, res) {
       const { id } = req.params;
       const { statusValue } = req.body;
+      const { authorization } = req.headers;
+      await Authenticator.verifyLocalAppToken(authorization);
+
       const item = await DynamoDB.updateItem("StatusInfo", { id: id, statusValue: statusValue });
       res.send(item);
     },
     openapi: {
       summary: "Update status info",
       description: "Update status info value",
+      security: [{ BearerAuth: ["status-admin"] }],
       requestBody: {
         content: {
           "application/json": {
@@ -74,12 +81,16 @@ export default function (rootRoutePath: string) {
     method: "POST",
     async handler(req, res) {
       const inputStatuses = req.body;
+      const { authorization } = req.headers;
+      await Authenticator.verifyLocalAppToken(authorization);
+
       await DynamoDB.updateItems("StatusInfo", inputStatuses);
       res.send();
     },
     openapi: {
       summary: "Update many status infos",
       description: "Update status infos in a batch request",
+      security: [{ BearerAuth: ["status-admin"] }],
       requestBody: {
         content: {
           "application/json": {
@@ -109,12 +120,16 @@ export default function (rootRoutePath: string) {
     method: "DELETE",
     async handler(req, res) {
       const { id } = req.params;
+      const { authorization } = req.headers;
+      await Authenticator.verifyLocalAppToken(authorization);
+
       await DynamoDB.deleteItem("StatusInfo", { id: id });
       res.send();
     },
     openapi: {
       summary: "Delete status info",
       description: "Delete status info",
+      security: [{ BearerAuth: ["status-admin"] }],
       responses: {
         "200": {
           description: "Success",
@@ -128,12 +143,15 @@ export default function (rootRoutePath: string) {
     method: "DELETE",
     async handler(req, res) {
       const inputStatuses = req.body;
+      const { authorization } = req.headers;
+      await Authenticator.verifyLocalAppToken(authorization);
       await DynamoDB.deleteItems("StatusInfo", inputStatuses);
       res.send();
     },
     openapi: {
       summary: "Delete many status infos",
       description: "Delete status infos in a batch request",
+      security: [{ BearerAuth: ["status-admin"] }],
       requestBody: {
         content: {
           "application/json": {
@@ -161,6 +179,8 @@ export default function (rootRoutePath: string) {
     path: "/get-known-statuses",
     method: "GET",
     async handler(req, res) {
+      const { authorization } = req.headers;
+      await Authenticator.verifyLocalAppToken(authorization);
       const statusValues = Object.keys(KnownStatusValues);
       const statusLabels = Object.values(KnownStatusValues);
       const transformedOutput = statusValues.map((statusValue, index) => {
@@ -171,7 +191,7 @@ export default function (rootRoutePath: string) {
     openapi: {
       summary: "Get known statuses",
       description: "Get meta data about known statuses",
-
+      security: [{ BearerAuth: ["status-admin"] }],
       responses: {
         "200": {
           description: "Success",
@@ -201,6 +221,4 @@ export default function (rootRoutePath: string) {
       },
     },
   });
-
-  return routes.getRouter();
 }
