@@ -1,10 +1,22 @@
+import { KnownStatusValues } from "../../data/models/StatusInfo";
 import Authorizer from "../../services/AuthentigationGW/Authorizer";
 import DynamoDB from "../../services/AWS/DynamoDB";
 import Documentation from "../utils/Documentation";
 import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 
-function transformStatusInfo(item: any) {
-  return { statusName: item.statusName, statusValue: item.statusValue };
+/**
+ * Transform statusInfo model to data product form (productizer)
+ *
+ * @param item
+ * @returns
+ */
+function transformStatusInfo(item: any): { statusName: string; statusValue: string; statusLabel: string } {
+  const statusKeys = Object.keys(KnownStatusValues);
+  const statusValues = Object.values(KnownStatusValues);
+  const statusKeyIndex = statusKeys.indexOf(item.statusValue);
+  const statusValue = statusValues[statusKeyIndex];
+  const statusLabel = statusValue || "Unknown status";
+  return { statusName: item.statusName, statusValue: item.statusValue, statusLabel: statusLabel };
 }
 
 export default function (rootRoutePath: string) {
@@ -55,6 +67,9 @@ export default function (rootRoutePath: string) {
                 type: "object",
                 properties: {
                   statusName: Documentation.getSchema("StatusInfo", "statusName"),
+                  statusLabel: {
+                    type: "string",
+                  },
                   statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
                 },
               },
@@ -117,6 +132,9 @@ export default function (rootRoutePath: string) {
                 type: "object",
                 properties: {
                   statusName: Documentation.getSchema("StatusInfo", "statusName"),
+                  statusLabel: {
+                    type: "string",
+                  },
                   statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
                 },
               },
