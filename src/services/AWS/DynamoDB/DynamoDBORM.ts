@@ -133,6 +133,28 @@ export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
 /**
  *
  * @param tableName
+ * @param items
+ * @returns
+ */
+export async function updateItems(tableName: string, items: LooseDynamoDBRecord[]) {
+  try {
+    const updateableItems = await Promise.all(
+      items.map(async (item) => {
+        const updateableItem = await parseDynamoDBInputItem(tableName, item, "update");
+        const { key, updateExpression, expressionAttributeValues } = await resolveDynamoDBUpdateItem(tableName, updateableItem);
+        return { key, updateExpression, expressionAttributeValues };
+      })
+    );
+
+    return Actions.transactWrite(tableName, updateableItems);
+  } catch (error) {
+    throw new DatabaseError(error);
+  }
+}
+
+/**
+ *
+ * @param tableName
  * @param item - { id: "bazz" } or { id: { S: "bazz" } }
  */
 export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
@@ -156,6 +178,21 @@ export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
 export async function deleteItem(tableName: string, key: LooseDynamoDBRecord) {
   try {
     return Actions.deleteItem(tableName, await resolveDynamoDBKey(tableName, key));
+  } catch (error) {
+    throw new DatabaseError(error);
+  }
+}
+
+/**
+ *
+ * @param tableName
+ * @param keys
+ * @returns
+ */
+export async function deleteItems(tableName: string, keys: LooseDynamoDBRecord[]) {
+  try {
+    const deletableKeys = await Promise.all(keys.map(async (key) => await resolveDynamoDBKey(tableName, key)));
+    return Actions.batchDelete(tableName, deletableKeys);
   } catch (error) {
     throw new DatabaseError(error);
   }

@@ -14,7 +14,7 @@ export default function (rootRoutePath: string) {
       res.send(items);
     },
     openapi: {
-      summary: "Status infos",
+      summary: "Retrieve status infos",
       description: "Get all status infos",
       responses: {
         "200": {
@@ -70,11 +70,43 @@ export default function (rootRoutePath: string) {
   });
 
   routes.addRoute({
+    path: "/status-infos",
+    method: "POST",
+    async handler(req, res) {
+      const inputStatuses = req.body;
+      await DynamoDB.updateItems("StatusInfo", inputStatuses);
+      res.send();
+    },
+    openapi: {
+      summary: "Update many status infos",
+      description: "Update status infos in a batch request",
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "array",
+              items: Documentation.getSchema("StatusInfo"),
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Success",
+          content: {
+            "application/json": {},
+          },
+        },
+      },
+    },
+  });
+
+  routes.addRoute({
     path: "/status-infos/:id",
     method: "DELETE",
     async handler(req, res) {
-      const { id } = req.params;
-      await DynamoDB.deleteItem("StatusInfo", { id: id });
+      const inputStatuses = req.body;
+      await DynamoDB.deleteItems("StatusInfo", inputStatuses);
       res.send();
     },
     openapi: {
@@ -83,6 +115,37 @@ export default function (rootRoutePath: string) {
       responses: {
         "200": {
           description: "Success",
+        },
+      },
+    },
+  });
+
+  routes.addRoute({
+    path: "/status-infos",
+    method: "DELETE",
+    async handler(req, res) {
+      const items = await DynamoDB.scan("StatusInfo");
+      res.send(items);
+    },
+    openapi: {
+      summary: "Delete many status infos",
+      description: "Delete status infos in a batch request",
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "array",
+              items: Documentation.getSchema("StatusInfo"),
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Success",
+          content: {
+            "application/json": {},
+          },
         },
       },
     },
