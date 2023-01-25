@@ -84,8 +84,11 @@ export default function (rootRoutePath: string) {
         content: {
           "application/json": {
             schema: {
-              type: "array",
-              items: Documentation.getSchema("StatusInfo"),
+              type: "object",
+              properties: {
+                id: Documentation.getSchema("StatusInfo", "id"),
+                statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
+              },
             },
           },
         },
@@ -134,8 +137,10 @@ export default function (rootRoutePath: string) {
         content: {
           "application/json": {
             schema: {
-              type: "array",
-              items: Documentation.getSchema("StatusInfo"),
+              type: "object",
+              properties: {
+                id: Documentation.getSchema("StatusInfo", "id"),
+              },
             },
           },
         },
