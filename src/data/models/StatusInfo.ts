@@ -75,8 +75,9 @@ const StatusInfo: DynamoDBModel = {
           type: "string",
         },
         statusName: {
-          description: "name of the status",
+          description: "programmic name of the status",
           type: "string",
+          example: "tax-return-status",
         },
         statusValue: {
           description: "value of the status",
