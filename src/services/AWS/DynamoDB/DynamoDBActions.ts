@@ -1,8 +1,9 @@
 /**
  * @see: https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/dynamodb-example-table-read-write.html
- * @see:
+ * @see: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html
  */
 import {
+  BatchWriteItemCommand,
   CreateTableCommand,
   DeleteItemCommand,
   DescribeTableCommand,
@@ -10,6 +11,7 @@ import {
   PutItemCommand,
   QueryCommand,
   ScanCommand,
+  TransactWriteItemsCommand,
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { ddbDocClient } from "./DynamoDBClient";
@@ -152,4 +154,47 @@ export async function createTable(tableName: string, schema: { KeySchema: Array<
     ...schema,
   };
   await ddbDocClient.send(new CreateTableCommand(params));
+}
+
+/**
+ *
+ * @param tableName
+ * @param items
+ */
+export async function transactWrite(tableName: string, items: Array<{ key: DynamoDBRecord; updateExpression: any; expressionAttributeValues: any }>) {
+  const params = {
+    TransactItems: items.map((item) => {
+      return {
+        Update: {
+          TableName: resolveTableNameActual(tableName),
+          Key: item.key,
+          UpdateExpression: item.updateExpression,
+          ExpressionAttributeValues: item.expressionAttributeValues,
+        },
+      };
+    }),
+  };
+
+  await ddbDocClient.send(new TransactWriteItemsCommand(params));
+}
+
+/**
+ *
+ * @param tableName
+ * @param keys
+ */
+export async function batchDelete(tableName: string, keys: Array<DynamoDBRecord>) {
+  const params = {
+    RequestItems: {
+      [resolveTableNameActual(tableName)]: keys.map((key) => {
+        return {
+          DeleteRequest: {
+            Key: key,
+          },
+        };
+      }),
+    },
+  };
+
+  await ddbDocClient.send(new BatchWriteItemCommand(params));
 }
