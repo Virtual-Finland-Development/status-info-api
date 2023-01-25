@@ -16,15 +16,6 @@ export function cloneItem(item: any): any {
   return item;
 }
 
-export function getEnumKeys(enumObj: any): string[] {
-  if (!isObject(enumObj)) {
-    throw new Error("Expected an enum-object");
-  }
-  return Object.keys(enumObj).filter((item) => {
-    return isNaN(Number(item));
-  });
-}
-
 export function trimSlashes(str: string): string {
   return str.replace(/^\/?|\/?$/g, "");
 }

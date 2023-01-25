@@ -1,5 +1,4 @@
 import { DynamoDBModel } from "../../services/AWS/DynamoDB/DynamoDBORMTypes";
-import { getEnumKeys } from "../../utils/Transformations";
 
 // Luonnos, Lähetetty, Käsittelyssä, Odottaa täydentämistä, Valmis,
 export enum KnownStatusValues {
@@ -44,7 +43,7 @@ const StatusInfo: DynamoDBModel = {
       {
         AttributeName: "statusValue",
         AttributeType: "S",
-        _AllowedValues: getEnumKeys(KnownStatusValues),
+        _AllowedValues: Object.keys(KnownStatusValues),
         _DefaultValue: "SENT",
       },
       {
@@ -73,7 +72,7 @@ const StatusInfo: DynamoDBModel = {
         statusValue: {
           description: "value of the status",
           type: "string",
-          enum: getEnumKeys(KnownStatusValues),
+          enum: Object.keys(KnownStatusValues),
           default: "SENT",
         },
         userId: {
