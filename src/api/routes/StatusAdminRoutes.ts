@@ -108,8 +108,8 @@ export default function (rootRoutePath: string) {
     path: "/status-infos/:id",
     method: "DELETE",
     async handler(req, res) {
-      const inputStatuses = req.body;
-      await DynamoDB.deleteItems("StatusInfo", inputStatuses);
+      const { id } = req.params;
+      await DynamoDB.deleteItem("StatusInfo", { id: id });
       res.send();
     },
     openapi: {
@@ -127,8 +127,9 @@ export default function (rootRoutePath: string) {
     path: "/status-infos",
     method: "DELETE",
     async handler(req, res) {
-      const items = await DynamoDB.scan("StatusInfo");
-      res.send(items);
+      const inputStatuses = req.body;
+      await DynamoDB.deleteItems("StatusInfo", inputStatuses);
+      res.send();
     },
     openapi: {
       summary: "Delete many status infos",
