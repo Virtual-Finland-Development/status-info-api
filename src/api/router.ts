@@ -22,9 +22,9 @@ DataManager.initialize();
 //
 // Routes
 //
-router.use(...BaseRoutes("/"));
-router.use(...StatusAdminUIRoutes("/status-admin"));
-router.use(...ProductizerRoutes("/productizers"));
+router.use(BaseRoutes("/"));
+router.use(StatusAdminUIRoutes("/status-admin"));
+router.use(ProductizerRoutes("/productizers"));
 routerApp.use("/", router);
 
 //

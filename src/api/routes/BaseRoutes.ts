@@ -91,5 +91,5 @@ export default function (rootRoutePath: string) {
     },
   });
 
-  return [rootRoutePath, routes.getRouter()];
+  return routes.getRouter();
 }
