@@ -11,7 +11,7 @@ export default function (routes: OpenAPIExpressRoutes, pathPrefix?: string) {
     method: "GET",
     async handler(req, res) {
       const { authorization } = req.headers;
-      await Authenticator.verifyLocalAppToken(authorization);
+      await Authenticator.verifyLocalAppToken(authorization, "STATUS_ADMIN_ACCESS:READ");
       const items = await DynamoDB.scan("StatusInfo");
       res.send(items);
     },
@@ -42,7 +42,7 @@ export default function (routes: OpenAPIExpressRoutes, pathPrefix?: string) {
       const { id } = req.params;
       const { statusValue } = req.body;
       const { authorization } = req.headers;
-      await Authenticator.verifyLocalAppToken(authorization);
+      await Authenticator.verifyLocalAppToken(authorization, "STATUS_ADMIN_ACCESS:WRITE");
 
       const item = await DynamoDB.updateItem("StatusInfo", { id: id, statusValue: statusValue });
       res.send(item);
@@ -82,7 +82,7 @@ export default function (routes: OpenAPIExpressRoutes, pathPrefix?: string) {
     async handler(req, res) {
       const inputStatuses = req.body;
       const { authorization } = req.headers;
-      await Authenticator.verifyLocalAppToken(authorization);
+      await Authenticator.verifyLocalAppToken(authorization, "STATUS_ADMIN_ACCESS:WRITE");
 
       await DynamoDB.updateItems("StatusInfo", inputStatuses);
       res.send();
@@ -121,7 +121,7 @@ export default function (routes: OpenAPIExpressRoutes, pathPrefix?: string) {
     async handler(req, res) {
       const { id } = req.params;
       const { authorization } = req.headers;
-      await Authenticator.verifyLocalAppToken(authorization);
+      await Authenticator.verifyLocalAppToken(authorization, "STATUS_ADMIN_ACCESS:WRITE");
 
       await DynamoDB.deleteItem("StatusInfo", { id: id });
       res.send();
@@ -144,7 +144,7 @@ export default function (routes: OpenAPIExpressRoutes, pathPrefix?: string) {
     async handler(req, res) {
       const inputStatuses = req.body;
       const { authorization } = req.headers;
-      await Authenticator.verifyLocalAppToken(authorization);
+      await Authenticator.verifyLocalAppToken(authorization, "STATUS_ADMIN_ACCESS:WRITE");
       await DynamoDB.deleteItems("StatusInfo", inputStatuses);
       res.send();
     },
@@ -180,7 +180,7 @@ export default function (routes: OpenAPIExpressRoutes, pathPrefix?: string) {
     method: "GET",
     async handler(req, res) {
       const { authorization } = req.headers;
-      await Authenticator.verifyLocalAppToken(authorization);
+      await Authenticator.verifyLocalAppToken(authorization, "STATUS_ADMIN_ACCESS:READ");
       const statusValues = Object.keys(KnownStatusValues);
       const statusLabels = Object.values(KnownStatusValues);
       const transformedOutput = statusValues.map((statusValue, index) => {

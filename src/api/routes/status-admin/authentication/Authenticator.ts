@@ -15,7 +15,7 @@ async function login(username: string, password: string, loginContext: string): 
   const user = await UserService.authenticate(username, password);
   if (user) {
     if (await UserService.hasPermission(user, loginContext)) {
-      const idToken = jsonwebtoken.sign({ username, password, loginContext }, await Settings.getSecret("STATUS_ADMIN_JWT_SECRET"), {
+      const idToken = jsonwebtoken.sign({ username }, await Settings.getSecret("STATUS_ADMIN_JWT_SECRET"), {
         expiresIn: "1h",
       });
       return { idToken };
@@ -30,13 +30,21 @@ async function login(username: string, password: string, loginContext: string): 
  *
  * @param token
  */
-async function verifyLocalAppToken(token: string | undefined) {
+async function verifyLocalAppToken(token: string | undefined, loginContext: string) {
   try {
     if (!token) throw new Error("No token");
     const bearerToken = token.split(" ")[1];
-    jsonwebtoken.verify(bearerToken, await Settings.getSecret("STATUS_ADMIN_JWT_SECRET"));
+    const decoded = jsonwebtoken.verify(bearerToken, await Settings.getSecret("STATUS_ADMIN_JWT_SECRET"));
+    if (typeof decoded === "string") throw new Error("Invalid token");
+
+    const user = await UserService.findUser(decoded.username);
+    if (!user) throw new Error("Could not retrieve credentials");
+
+    if (!(await UserService.hasPermission(user, loginContext))) {
+      throw new Error("Permission denied");
+    }
   } catch (error) {
-    throw new AccessDeniedError("Invalid token");
+    throw new AccessDeniedError(error);
   }
 }
 

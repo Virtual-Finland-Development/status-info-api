@@ -8,7 +8,7 @@ export default function (routes: OpenAPIExpressRoutes, pathPrefix?: string) {
     method: "POST",
     async handler(req, res) {
       const { username, password } = req.body;
-      const { idToken } = await Authenticator.login(username, password, "ACCESS_STATUS_ADMIN_UI_APP");
+      const { idToken } = await Authenticator.login(username, password, "STATUS_ADMIN_ACCESS:READ");
       res.send({ idToken });
     },
     openapi: {

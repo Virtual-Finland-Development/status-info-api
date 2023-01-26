@@ -22,7 +22,7 @@ const permissionGroupUsers = [
 
 const permissionGroupPermissions: Record<string, Array<string>> = {
   root: ["ALL_ACCESS"],
-  users: ["ACCESS_STATUS_ADMIN_UI_APP"],
+  users: ["STATUS_ADMIN_ACCESS:READ"],
 };
 
 async function findUser(username: string) {
@@ -67,4 +67,5 @@ async function hasPermission(user: User, permissionName: string): Promise<boolea
 export default {
   authenticate,
   hasPermission,
+  findUser,
 };
