@@ -10,13 +10,13 @@ import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
  * @param item
  * @returns
  */
-function transformStatusInfo(item: any): { statusName: string; statusValue: string; statusLabel: string } {
+function transformStatusInfo(item: any): { statusName: string; statusValue: string; statusLabel: string; updatedAt: string; createdAt: string } {
   const statusKeys = Object.keys(KnownStatusValues);
   const statusValues = Object.values(KnownStatusValues);
   const statusKeyIndex = statusKeys.indexOf(item.statusValue);
   const statusValue = statusValues[statusKeyIndex];
   const statusLabel = statusValue || "Unknown status";
-  return { statusName: item.statusName, statusValue: item.statusValue, statusLabel: statusLabel };
+  return { statusName: item.statusName, statusValue: item.statusValue, statusLabel: statusLabel, updatedAt: item.updatedAt, createdAt: item.createdAt };
 }
 
 export default function (rootRoutePath: string) {
@@ -72,6 +72,8 @@ export default function (rootRoutePath: string) {
                     example: "Sent",
                   },
                   statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
+                  updatedAt: Documentation.getSchema("StatusInfo", "updatedAt"),
+                  createdAt: Documentation.getSchema("StatusInfo", "createdAt"),
                 },
               },
             },
@@ -138,6 +140,8 @@ export default function (rootRoutePath: string) {
                     example: "Sent",
                   },
                   statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
+                  updatedAt: Documentation.getSchema("StatusInfo", "updatedAt"),
+                  createdAt: Documentation.getSchema("StatusInfo", "createdAt"),
                 },
               },
             },
