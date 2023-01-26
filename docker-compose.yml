@@ -16,6 +16,7 @@ services:
       - AWS_REGION=eu-north-1
       - DYNAMODB_TABLE_StatusInfo=status-info-api-StatusTable-local
       - DYNAMODB_ENDPOINT=http://dynamodb:8000
+      - STATUS_ADMIN_JWT_SECRET=secret
     depends_on:
       - dynamodb
   dynamodb:

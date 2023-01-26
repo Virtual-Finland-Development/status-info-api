@@ -28,5 +28,4 @@ async function getAuthorization(authorizationBearer: string | string[] | undefin
     throw new AccessDeniedError(error);
   }
 }
-
 export default { getAuthorization };

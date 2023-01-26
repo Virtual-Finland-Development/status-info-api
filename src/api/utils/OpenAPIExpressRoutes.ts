@@ -17,9 +17,15 @@ export default class OpenAPIExpressRoutes {
     return this.#router;
   }
 
-  addRoute(routeDescription: { method: HttpMethod; path: string; handler: express.RequestHandler; openapi?: OpenAPIV3.OperationObject }) {
+  addRoute(routeDescription: { method: HttpMethod; path: string; pathPrefix?: string; handler: express.RequestHandler; openapi?: OpenAPIV3.OperationObject }) {
     const { method, path, handler, openapi } = routeDescription;
-    const operationPath = this.#rootRoutePath === "/" ? path : `${this.#rootRoutePath}${path}`;
+    let rootRoutePath = this.#rootRoutePath;
+    const pathPrefix = routeDescription.pathPrefix || "";
+    if (pathPrefix) {
+      rootRoutePath = `/${trimSlashes(rootRoutePath)}/${trimSlashes(pathPrefix)}`;
+    }
+
+    const operationPath = rootRoutePath === "/" ? `/${trimSlashes(path)}` : `/${trimSlashes(rootRoutePath)}/${trimSlashes(path)}`;
     const routerMethod = HttpMethods[method].toLowerCase();
     // Register route handler
     this.#router[routerMethod](operationPath, handler);

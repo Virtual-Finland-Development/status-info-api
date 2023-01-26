@@ -29,3 +29,4 @@ functions:
       AWS_SECRET_ACCESS_KEY: dummy
       DYNAMODB_TABLE_StatusInfo: ${env:DYNAMODB_TABLE_StatusInfo, 'status-info-api-StatusTable-local'}
       DYNAMODB_ENDPOINT: ${env:DYNAMODB_ENDPOINT, 'http://localhost:8000'}
+      STATUS_ADMIN_JWT_SECRET: ${env:STATUS_ADMIN_JWT_SECRET, 'secret'}
