@@ -1,10 +1,22 @@
+import { KnownStatusValues } from "../../data/models/StatusInfo";
 import Authorizer from "../../services/AuthentigationGW/Authorizer";
 import DynamoDB from "../../services/AWS/DynamoDB";
 import Documentation from "../utils/Documentation";
 import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 
-function transformStatusInfo(item: any) {
-  return { statusName: item.statusName, statusValue: item.statusValue };
+/**
+ * Transform statusInfo model to data product form (productizer)
+ *
+ * @param item
+ * @returns
+ */
+function transformStatusInfo(item: any): { statusName: string; statusValue: string; statusLabel: string } {
+  const statusKeys = Object.keys(KnownStatusValues);
+  const statusValues = Object.values(KnownStatusValues);
+  const statusKeyIndex = statusKeys.indexOf(item.statusValue);
+  const statusValue = statusValues[statusKeyIndex];
+  const statusLabel = statusValue || "Unknown status";
+  return { statusName: item.statusName, statusValue: item.statusValue, statusLabel: statusLabel };
 }
 
 export default function (rootRoutePath: string) {
@@ -30,8 +42,8 @@ export default function (rootRoutePath: string) {
       return res.send();
     },
     openapi: {
-      summary: "Retrieve users status info",
-      description: "Productizer for users status info event",
+      summary: "Retrieve user owned status info",
+      description: "Productizer for user owned status info event",
       security: [{ BearerAuth: [] }],
       parameters: [{ in: "header", name: "Authorization", schema: { type: "string" } }], // Show in Swagger UI
       requestBody: {
@@ -55,23 +67,11 @@ export default function (rootRoutePath: string) {
                 type: "object",
                 properties: {
                   statusName: Documentation.getSchema("StatusInfo", "statusName"),
-                  statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
-                },
-              },
-            },
-          },
-        },
-        "403": {
-          description: "Access denied",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
+                  statusLabel: {
                     type: "string",
-                    example: "Access denied",
+                    example: "Sent",
                   },
+                  statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
                 },
               },
             },
@@ -108,7 +108,7 @@ export default function (rootRoutePath: string) {
     },
     openapi: {
       summary: "Add or update status info",
-      description: "Productizer for users status info event",
+      description: "Productizer for user owned status info event",
       security: [{ BearerAuth: [] }],
       parameters: [{ in: "header", name: "Authorization", schema: { type: "string" } }], // Show in Swagger UI
       requestBody: {
@@ -133,23 +133,11 @@ export default function (rootRoutePath: string) {
                 type: "object",
                 properties: {
                   statusName: Documentation.getSchema("StatusInfo", "statusName"),
-                  statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
-                },
-              },
-            },
-          },
-        },
-        "403": {
-          description: "Access denied",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
+                  statusLabel: {
                     type: "string",
-                    example: "Access denied",
+                    example: "Sent",
                   },
+                  statusValue: Documentation.getSchema("StatusInfo", "statusValue"),
                 },
               },
             },

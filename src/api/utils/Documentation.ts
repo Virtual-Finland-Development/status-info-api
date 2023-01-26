@@ -1,5 +1,6 @@
 import { DocumentBuilder } from "express-openapi-generator";
 import { OpenAPIV3 } from "openapi-types";
+import { getAccessDeniedOpenAPIDescription, getUnauthorizedOpenAPIDescription, getValidationErrorOpenAPIDescription } from "./OpenapiResponseDescriptions";
 
 // Operations handle
 const operationsStore: Record<string, Record<string, OpenAPIV3.OperationObject>> = {};
@@ -72,6 +73,7 @@ function addOperationDoc(method: string, path: string, openapi: OpenAPIV3.Operat
   if (typeof operationsStore[path] === "undefined") {
     operationsStore[path] = {};
   }
+  openapi = ensureCommonOpenApiProperties(openapi);
   operationsStore[path][method] = openapi;
 }
 
@@ -158,6 +160,37 @@ function getSwaggerHtml(openApiDocUrl: string) {
 </script>
 </body>
 </html>`;
+}
+
+/**
+ *
+ * @param openapi
+ * @returns mutated openapi
+ */
+function ensureCommonOpenApiProperties(openapi: OpenAPIV3.OperationObject): OpenAPIV3.OperationObject {
+  if (openapi.security) {
+    const responses = openapi.responses || {};
+    const responseKeys = Object.keys(responses);
+    if (!responseKeys.includes("401") && !responseKeys.includes("403")) {
+      openapi.responses = {
+        ...openapi.responses,
+        ...getUnauthorizedOpenAPIDescription(),
+        ...getAccessDeniedOpenAPIDescription(),
+      };
+    }
+  }
+
+  if (openapi.parameters || openapi.requestBody) {
+    const responses = openapi.responses || {};
+    const responseKeys = Object.keys(responses);
+    if (!responseKeys.includes("422")) {
+      openapi.responses = {
+        ...openapi.responses,
+        ...getValidationErrorOpenAPIDescription(),
+      };
+    }
+  }
+  return openapi;
 }
 
 export default {
