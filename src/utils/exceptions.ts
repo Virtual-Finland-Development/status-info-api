@@ -28,3 +28,6 @@ export class ValidationError extends AppError {
 export class AccessDeniedError extends AppError {
   status = 403;
 }
+export class NotFoundError extends AppError {
+  status = 404;
+}

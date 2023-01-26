@@ -1,6 +1,7 @@
 import { KnownStatusValues } from "../../data/models/StatusInfo";
 import Authorizer from "../../services/AuthentigationGW/Authorizer";
 import DynamoDB from "../../services/AWS/DynamoDB";
+import { NotFoundError } from "../../utils/exceptions";
 import Documentation from "../utils/Documentation";
 import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 
@@ -35,11 +36,11 @@ export default function (rootRoutePath: string) {
         { key: "statusName", value: statusName },
       ]);
 
-      if (item) {
-        const statusInfo = transformStatusInfo(item);
-        return res.send(transformStatusInfo(statusInfo));
+      if (!item) {
+        throw new NotFoundError("Status information not found");
       }
-      return res.send();
+      const statusInfo = transformStatusInfo(item);
+      return res.send(statusInfo);
     },
     openapi: {
       summary: "Retrieve user owned status info",
@@ -79,6 +80,22 @@ export default function (rootRoutePath: string) {
             },
           },
         },
+        "404": {
+          description: "Status information not found",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  message: {
+                    type: "string",
+                    example: "Status information not found",
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
   });
@@ -106,7 +123,7 @@ export default function (rootRoutePath: string) {
       const item = await DynamoDB.putItem("StatusInfo", { userId: userId, userEmail: userEmail, statusName: statusName, statusValue: statusValue });
       const statusInfo = transformStatusInfo(item);
       console.debug("Created new status info", statusInfo);
-      return res.send(transformStatusInfo(statusInfo));
+      return res.send(statusInfo);
     },
     openapi: {
       summary: "Add or update status info",
