@@ -54,6 +54,7 @@ export function createLambdaFunction(stackConfig: StackConfig, lambdaFunctionExe
     environment: {
       variables: {
         DYNAMODB_TABLE_StatusInfo: dynamoDBtableName,
+        STATUS_ADMIN_JWT_SECRET: "secret",
       },
     },
   });
