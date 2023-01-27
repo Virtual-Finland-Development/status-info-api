@@ -1,6 +1,6 @@
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4, v5 as uuidv5 } from "uuid";
-import { getModel } from "../../../data/DataManager";
+import { getModel, ModelName } from "../../../data/DataManager";
 import { ValidationError } from "../../../utils/exceptions";
 import Settings from "../../../utils/Settings";
 import { cloneItem } from "../../../utils/Transformations";
@@ -11,8 +11,8 @@ import { DDBPrimitive, DDBSearchClause, DynamoDBModel, LooseDynamoDBRecord, Prim
  * @param tableName
  * @returns
  */
-export async function getSchema(tableName: string): Promise<DynamoDBModel["schema"]> {
-  const model = await getModel(tableName);
+export async function getSchema(tableName: ModelName): Promise<DynamoDBModel["schema"]> {
+  const model = getModel(tableName);
   if (!model) {
     throw new Error(`Could not find schema for table ${tableName}`);
   }
@@ -26,7 +26,7 @@ export async function getSchema(tableName: string): Promise<DynamoDBModel["schem
  * @param key
  * @returns
  */
-export async function attributeTypeResolver(tableName: string, key: string) {
+export async function attributeTypeResolver(tableName: ModelName, key: string) {
   const schema = await getSchema(tableName);
   const attributeDefinition = schema.AttributeDefinitions.find((attributeDefinition: { AttributeName: string }) => attributeDefinition.AttributeName === key);
   if (!attributeDefinition) {
@@ -47,7 +47,7 @@ export async function attributeTypeResolver(tableName: string, key: string) {
  * @param key
  * @returns
  */
-export async function resolveDynamoDBKey(tableName: string, key: LooseDynamoDBRecord, onlySchemaKeyValues: boolean = true): Promise<Record<string, AttributeValue>> {
+export async function resolveDynamoDBKey(tableName: ModelName, key: LooseDynamoDBRecord, onlySchemaKeyValues: boolean = true): Promise<Record<string, AttributeValue>> {
   if (Object.keys(key).length < 1) {
     throw new Error(`Key must have at least one key-value pair. Key: ${JSON.stringify(key)}`);
   }
@@ -104,7 +104,7 @@ export function transformModelToDynamoDBSchema(model: DynamoDBModel): DynamoDBMo
  * @param query
  * @returns
  */
-export async function resolveDynamoDBSearchClause(tableName: string, query: DDBSearchClause) {
+export async function resolveDynamoDBSearchClause(tableName: ModelName, query: DDBSearchClause) {
   const queryParts = [];
   for (const queryItem of query) {
     const { key, value, operator } = queryItem;
@@ -146,7 +146,7 @@ export function transformSearchClauseToPrimitiveRecord(searchClause: DDBSearchCl
  * @param updateItem
  * @returns
  */
-export async function resolveDynamoDBUpdateItem(tableName: string, updateItem: PrimitiveDynamoDBRecord) {
+export async function resolveDynamoDBUpdateItem(tableName: ModelName, updateItem: PrimitiveDynamoDBRecord) {
   const itemKey = await resolveDynamoDBKey(tableName, updateItem);
   const itemKeyNames = Object.keys(itemKey);
   const updateExpression = [];
@@ -195,7 +195,11 @@ export function ensurePrimitiveDynamoDBRecord(record: LooseDynamoDBRecord): Prim
  * @param event
  * @returns immutable item
  */
-export async function parseDynamoDBInputItem(tableName: string, item: PrimitiveDynamoDBRecord | LooseDynamoDBRecord, event: "create" | "update"): Promise<PrimitiveDynamoDBRecord> {
+export async function parseDynamoDBInputItem(
+  tableName: ModelName,
+  item: PrimitiveDynamoDBRecord | LooseDynamoDBRecord,
+  event: "create" | "update"
+): Promise<PrimitiveDynamoDBRecord> {
   const primitiveItem = ensurePrimitiveDynamoDBRecord(item);
   const schema = await getSchema(tableName);
   mutateDynamoDBAutoFills(schema, primitiveItem, event);
@@ -312,7 +316,7 @@ export function generateUUIDv5(item: PrimitiveDynamoDBRecord, fields?: string[])
  * @param searchClause
  * @returns
  */
-export async function resolveQueryableSearch(tableName: string, searchClause: DDBSearchClause): Promise<DDBSearchClause> {
+export async function resolveQueryableSearch(tableName: ModelName, searchClause: DDBSearchClause): Promise<DDBSearchClause> {
   const queryableSearchClause: DDBSearchClause = [];
   const queryableKeys: string[] = [];
 
@@ -355,6 +359,6 @@ export async function resolveQueryableSearch(tableName: string, searchClause: DD
  * @param tableName
  * @returns
  */
-export function resolveTableNameActual(tableName: string): string {
+export function resolveTableNameActual(tableName: ModelName): string {
   return Settings.getEnvironmentVariable(`DYNAMODB_TABLE_${tableName}`, tableName);
 }

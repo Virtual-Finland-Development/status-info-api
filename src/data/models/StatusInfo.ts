@@ -1,5 +1,3 @@
-import { DynamoDBModel } from "../../services/AWS/DynamoDB/DynamoDBORMTypes";
-
 // Luonnos, Lähetetty, Käsittelyssä, Odottaa täydentämistä, Valmis,
 export enum KnownStatusValues {
   "SENT" = "Sent",
@@ -9,8 +7,17 @@ export enum KnownStatusValues {
 }
 
 // @see: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html
-const StatusInfo: DynamoDBModel = {
+const StatusInfo = {
   tableName: "StatusInfo",
+  simpleSchema: {
+    id: "",
+    userId: "",
+    userEmail: "",
+    statusName: "",
+    statusValue: "",
+    createdAt: "",
+    updatedAt: "",
+  },
   schema: {
     KeySchema: [
       {
