@@ -1,18 +1,13 @@
 import Documentation from "../api/utils/Documentation";
-import { DynamoDBModel } from "../services/AWS/DynamoDB/DynamoDBORMTypes";
+import * as Models from "./models/";
 
-import { default as StatusInfo } from "./models/StatusInfo";
-
-export const Models = {
-  StatusInfo: StatusInfo,
-};
 export type ModelName = keyof typeof Models;
 
-export function getModel(modelName: ModelName): DynamoDBModel {
+export function getModel(modelName: ModelName) {
   if (typeof Models[modelName] === "undefined") {
     throw new Error(`Model ${modelName} not found`);
   }
-  return Models[modelName] as DynamoDBModel;
+  return Models[modelName];
 }
 
 export function initialize() {
@@ -28,4 +23,5 @@ export function initialize() {
 export default {
   getModel,
   initialize,
+  Models,
 };

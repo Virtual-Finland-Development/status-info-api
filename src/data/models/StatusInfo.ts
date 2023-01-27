@@ -7,7 +7,7 @@ export enum KnownStatusValues {
 }
 
 // @see: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html
-const StatusInfo = {
+export default {
   tableName: "StatusInfo",
   simpleSchema: {
     id: "",
@@ -117,5 +117,3 @@ const StatusInfo = {
     },
   },
 };
-
-export default StatusInfo;

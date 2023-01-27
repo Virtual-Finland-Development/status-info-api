@@ -1,4 +1,4 @@
-import { ModelName, Models } from "../../../data/DataManager";
+import DataManager, { ModelName } from "../../../data/DataManager";
 import { DatabaseError } from "../../../utils/exceptions";
 import * as Actions from "./DynamoDBActions";
 import { DDBSearchClause, LooseDynamoDBRecord } from "./DynamoDBORMTypes";
@@ -17,11 +17,11 @@ import {
  * @param limit
  * @returns
  */
-export async function scan<T extends ModelName>(tableName: T, query: DDBSearchClause = [], limit?: number): Promise<Array<(typeof Models)[T]["simpleSchema"]>> {
+export async function scan<T extends ModelName>(tableName: T, query: DDBSearchClause = [], limit?: number): Promise<Array<(typeof DataManager.Models)[T]["simpleSchema"]>> {
   const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, query);
   const items = await Actions.scan(tableName, filterExpression, expressionAttributeValues, limit);
   if (items instanceof Array) {
-    return items.map((item) => ensurePrimitiveDynamoDBRecord(item) as unknown as (typeof Models)[T]["simpleSchema"]);
+    return items.map((item) => ensurePrimitiveDynamoDBRecord(item) as unknown as (typeof DataManager.Models)[T]["simpleSchema"]);
   }
   return [];
 }
@@ -33,11 +33,11 @@ export async function scan<T extends ModelName>(tableName: T, query: DDBSearchCl
  * @param limit
  * @returns
  */
-export async function query<T extends ModelName>(tableName: T, searchClause: DDBSearchClause, limit?: number): Promise<Array<(typeof Models)[T]["simpleSchema"]>> {
+export async function query<T extends ModelName>(tableName: T, searchClause: DDBSearchClause, limit?: number): Promise<Array<(typeof DataManager.Models)[T]["simpleSchema"]>> {
   const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, searchClause);
   const items = await Actions.query(tableName, filterExpression, "", expressionAttributeValues);
   if (items instanceof Array) {
-    return items.map((item) => ensurePrimitiveDynamoDBRecord(item) as unknown as (typeof Models)[T]["simpleSchema"]);
+    return items.map((item) => ensurePrimitiveDynamoDBRecord(item) as unknown as (typeof DataManager.Models)[T]["simpleSchema"]);
   }
   return [];
 }
@@ -48,7 +48,7 @@ export async function query<T extends ModelName>(tableName: T, searchClause: DDB
  * @param query
  * @returns
  */
-export async function scanOne<T extends ModelName>(tableName: T, searchClause: DDBSearchClause): Promise<(typeof Models)[T]["simpleSchema"] | null> {
+export async function scanOne<T extends ModelName>(tableName: T, searchClause: DDBSearchClause): Promise<(typeof DataManager.Models)[T]["simpleSchema"] | null> {
   const items = await scan(tableName, searchClause, 1);
   if (items.length === 0) {
     return null;
@@ -62,7 +62,7 @@ export async function scanOne<T extends ModelName>(tableName: T, searchClause: D
  * @param query
  * @returns
  */
-export async function queryOne<T extends ModelName>(tableName: T, searchClause: DDBSearchClause): Promise<(typeof Models)[T]["simpleSchema"] | null> {
+export async function queryOne<T extends ModelName>(tableName: T, searchClause: DDBSearchClause): Promise<(typeof DataManager.Models)[T]["simpleSchema"] | null> {
   const items = await query(tableName, searchClause, 1);
   if (items.length === 0) {
     return null;
@@ -75,7 +75,7 @@ export async function queryOne<T extends ModelName>(tableName: T, searchClause: 
  * @param tableName
  * @param searchClause
  */
-export async function searchOne<T extends ModelName>(tableName: T, searchClause: DDBSearchClause): Promise<(typeof Models)[T]["simpleSchema"] | null> {
+export async function searchOne<T extends ModelName>(tableName: T, searchClause: DDBSearchClause): Promise<(typeof DataManager.Models)[T]["simpleSchema"] | null> {
   const queryableSearch = await resolveQueryableSearch(tableName, searchClause);
   if (queryableSearch.length === 0) {
     return scanOne(tableName, searchClause);
@@ -89,7 +89,7 @@ export async function searchOne<T extends ModelName>(tableName: T, searchClause:
  * @param key - { id: "bazz" } or { id: { S: "bazz" } }
  * @returns
  */
-export async function getItem<T extends ModelName>(tableName: T, key: LooseDynamoDBRecord): Promise<(typeof Models)[T]["simpleSchema"] | null> {
+export async function getItem<T extends ModelName>(tableName: T, key: LooseDynamoDBRecord): Promise<(typeof DataManager.Models)[T]["simpleSchema"] | null> {
   let item;
   try {
     item = await Actions.getItem(tableName, await resolveDynamoDBKey(tableName, key));
@@ -99,7 +99,7 @@ export async function getItem<T extends ModelName>(tableName: T, key: LooseDynam
   if (!item) {
     return null;
   }
-  return ensurePrimitiveDynamoDBRecord(item) as unknown as (typeof Models)[T]["simpleSchema"];
+  return ensurePrimitiveDynamoDBRecord(item) as unknown as (typeof DataManager.Models)[T]["simpleSchema"];
 }
 
 /**
@@ -108,7 +108,7 @@ export async function getItem<T extends ModelName>(tableName: T, key: LooseDynam
  * @param item - { id: "bazz", statusName: "buzz", statusValue: "bazz" }
  * @returns
  */
-export async function updateItem<T extends ModelName>(tableName: ModelName, item: LooseDynamoDBRecord): Promise<(typeof Models)[T]["simpleSchema"] | null> {
+export async function updateItem<T extends ModelName>(tableName: T, item: LooseDynamoDBRecord): Promise<(typeof DataManager.Models)[T]["simpleSchema"] | null> {
   try {
     // Preps
     const updateableItem = await parseDynamoDBInputItem(tableName, item, "update");
@@ -157,14 +157,14 @@ export async function updateItems<T extends ModelName>(tableName: T, items: Loos
  * @param tableName
  * @param item - { id: "bazz" } or { id: { S: "bazz" } }
  */
-export async function putItem<T extends ModelName>(tableName: T, item: LooseDynamoDBRecord): Promise<(typeof Models)[T]["simpleSchema"] | null> {
+export async function putItem<T extends ModelName>(tableName: T, item: LooseDynamoDBRecord): Promise<(typeof DataManager.Models)[T]["simpleSchema"] | null> {
   try {
     // Preps
     const insertableItem = await parseDynamoDBInputItem(tableName, item, "create");
 
     // Inserts
     await Actions.putItem(tableName, await resolveDynamoDBKey(tableName, insertableItem, false));
-    return insertableItem as (typeof Models)[T]["simpleSchema"];
+    return insertableItem as (typeof DataManager.Models)[T]["simpleSchema"];
   } catch (error) {
     throw new DatabaseError(error);
   }
