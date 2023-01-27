@@ -1,7 +1,7 @@
 import { KnownStatusValues } from "../../data/models/StatusInfo";
 import Authorizer from "../../services/AuthentigationGW/Authorizer";
 import DynamoDB from "../../services/AWS/DynamoDB";
-import { NotFoundError } from "../../utils/exceptions";
+import { NotFoundError, ValidationError } from "../../utils/exceptions";
 import Documentation from "../utils/Documentation";
 import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
 
@@ -31,6 +31,11 @@ export default function (rootRoutePath: string) {
       const { authorization } = req.headers;
       const { userId } = await Authorizer.getAuthorization(authorization); // throws
 
+      // In-case the openapi request validation fails
+      if (!statusName) {
+        throw new ValidationError("Missing required parameter: statusName");
+      }
+
       const item = await DynamoDB.searchOne("StatusInfo", [
         { key: "userId", value: userId },
         { key: "statusName", value: statusName },
@@ -52,6 +57,7 @@ export default function (rootRoutePath: string) {
           "application/json": {
             schema: {
               type: "object",
+              required: ["statusName"],
               properties: {
                 statusName: Documentation.getSchema("StatusInfo", "statusName"),
               },
@@ -108,6 +114,11 @@ export default function (rootRoutePath: string) {
       const { authorization } = req.headers;
       const { userId, userEmail } = await Authorizer.getAuthorization(authorization); // throws
 
+      // In-case the openapi request validation fails
+      if (!statusName) {
+        throw new ValidationError("Missing required parameter: statusName");
+      }
+
       let existingStatusInfo = await DynamoDB.searchOne("StatusInfo", [
         { key: "userId", value: userId },
         { key: "statusName", value: statusName },
@@ -135,6 +146,7 @@ export default function (rootRoutePath: string) {
           "application/json": {
             schema: {
               type: "object",
+              required: ["statusName"],
               properties: {
                 statusName: Documentation.getSchema("StatusInfo", "statusName"),
                 statusValue: Documentation.getSchema("StatusInfo", "statusValue"),

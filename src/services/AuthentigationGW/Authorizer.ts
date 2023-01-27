@@ -23,6 +23,10 @@ async function getAuthorization(authorizationBearer: string | string[] | undefin
     // @TODO: Verify token signature
 
     const { sub, email } = payload;
+    if (!sub || !email) {
+      throw new AccessDeniedError("Invalid authorization token payload");
+    }
+
     return { userId: sub, userEmail: email };
   } catch (error) {
     throw new AccessDeniedError(error);
