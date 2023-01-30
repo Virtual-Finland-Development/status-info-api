@@ -272,8 +272,7 @@ function validateDynamoDBValueUpdate(schema: DynamoDBModel["schema"], item: Prim
     const { AttributeName, _AllowedValues } = needyAttribute;
     const itemValue = item[AttributeName];
 
-    // @ts-ignore: Object is possibly 'undefined' check is done above
-    if (!_AllowedValues.includes(itemValue)) {
+    if (typeof _AllowedValues !== "undefined" && !_AllowedValues.includes(itemValue)) {
       throw new ValidationError(`Invalid value for attribute ${AttributeName}. Value: [${itemValue}]. Allowed values: [${_AllowedValues?.join(", ")}]`);
     }
   }

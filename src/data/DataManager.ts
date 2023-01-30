@@ -1,3 +1,4 @@
+import { OpenAPIV3 } from "openapi-types";
 import Documentation from "../api/utils/Documentation";
 import * as Models from "./models/";
 
@@ -14,8 +15,7 @@ export function initialize() {
   // Initialize schemas
   for (const model of Object.values(Models)) {
     if (model.openapi) {
-      // @ts-ignore
-      Documentation.addSchema(model.tableName, model.openapi);
+      Documentation.addSchema(model.tableName, model.openapi as OpenAPIV3.SchemaObject);
     }
   }
 }
