@@ -1,7 +1,9 @@
 import { checkIfTableExists, createTable } from "../../../services/AWS/DynamoDB/DynamoDBActions";
 import { putItem } from "../../../services/AWS/DynamoDB/DynamoDBORM";
+import { DynamoDBModel } from "../../../services/AWS/DynamoDB/DynamoDBORMTypes";
 import { transformModelToDynamoDBSchema } from "../../../services/AWS/DynamoDB/DynamoDBORMUtils";
 import Settings from "../../../utils/Settings";
+import { ModelName } from "../../DataManager";
 
 import StatusInfoModel from "../../models/StatusInfo";
 
@@ -19,13 +21,13 @@ export default async function ensureLocalDynamoDBSchema() {
   };
 
   const { tableName } = StatusInfoModel;
-  const schema = transformModelToDynamoDBSchema(StatusInfoModel);
+  const schema = transformModelToDynamoDBSchema(StatusInfoModel as DynamoDBModel);
 
   if (!(await checkIfTableExists(tableName))) {
     console.log(`Table ${tableName} does not exist, creating it...`);
     await createTable(tableName, { ...defaultsForLocal, ...schema });
     console.log("Populating table with example data...");
-    await putItem(tableName, { userId: "sdad123fsdfe", statusName: "ExampleStatus", userEmail: "test@mail.localhost" });
+    await putItem(tableName as ModelName, { userId: "sdad123fsdfe", statusName: "ExampleStatus", userEmail: "test@mail.localhost" });
   }
 }
 

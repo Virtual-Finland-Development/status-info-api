@@ -13,9 +13,9 @@ export function getModel(modelName: ModelName) {
 export function initialize() {
   // Initialize schemas
   for (const model of Object.values(Models)) {
-    if (model.openapi?.schema) {
+    if (model.openapi) {
       // @ts-ignore
-      Documentation.addSchema(model.tableName, model.openapi.schema);
+      Documentation.addSchema(model.tableName, model.openapi);
     }
   }
 }
