@@ -1,3 +1,3 @@
 import { default as StatusInfo } from "./StatusInfo";
 
-export { StatusInfo };
+export default { StatusInfo: new StatusInfo() };

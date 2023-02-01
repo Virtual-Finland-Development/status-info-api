@@ -1,4 +1,4 @@
-import { KnownStatusValues } from "../../data/models/StatusInfo";
+import StatusInfo, { KnownStatusValues } from "../../data/models/StatusInfo";
 import Authorizer from "../../services/AuthentigationGW/Authorizer";
 import DynamoDB from "../../services/AWS/DynamoDB";
 import { NotFoundError, ValidationError } from "../../utils/exceptions";
@@ -11,7 +11,7 @@ import OpenAPIExpressRoutes from "../utils/OpenAPIExpressRoutes";
  * @param item
  * @returns
  */
-function transformStatusInfo(item: any): { statusName: string; statusValue: string; statusLabel: string; updatedAt: string; createdAt: string } {
+function transformStatusInfo(item: StatusInfo): { statusName: string; statusValue: string; statusLabel: string; updatedAt: string; createdAt: string } {
   const statusKeys = Object.keys(KnownStatusValues);
   const statusValues = Object.values(KnownStatusValues);
   const statusKeyIndex = statusKeys.indexOf(item.statusValue);
@@ -44,6 +44,7 @@ export default function (rootRoutePath: string) {
       if (!item) {
         throw new NotFoundError("Status information not found");
       }
+
       const statusInfo = transformStatusInfo(item);
       return res.send(statusInfo);
     },

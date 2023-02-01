@@ -3,7 +3,7 @@
  */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import Settings from "../../../utils/Settings";
+import Settings from "../../../../utils/Settings";
 
 const dynamoDBClientOptions: any = {};
 
