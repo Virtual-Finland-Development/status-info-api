@@ -71,7 +71,7 @@ const DynamoDBModelGenerator: any = {
     for (const columnDefinition of columnDefinitions) {
       const { dynamodb, openapi } = columnDefinition.options;
       const columnName = columnDefinition.name;
-      const columnType = columnDefinition.type;
+      const columnType = (columnDefinition.type || openapi.type || "string").toLowerCase();
 
       const AttributeDefinition: any = {
         AttributeName: columnName,
@@ -101,6 +101,9 @@ const DynamoDBModelGenerator: any = {
         }
       }
 
+      if (!openapi.type) {
+        openapi.type = columnType;
+      }
       openapiProperties[columnName] = openapi;
       AttributeDefinitions.push(AttributeDefinition);
     }
@@ -150,7 +153,7 @@ export function Column(options: ColumnOptions): PropertyDecorator {
       target: prototype.constructor,
       name: propertyKey,
       options: options,
-      type: reflectType.name.toString(),
+      type: reflectType?.name?.toString(),
     });
   };
 }
