@@ -1,6 +1,6 @@
 import Documentation from "../api/utils/Documentation";
 import { DynamoDBModel } from "../services/AWS/DynamoDB/DynamoDBORMTypes";
-import Models from "./models/";
+import { default as Models } from "./models/";
 
 export type ModelName = keyof typeof Models;
 export type ModelItem<T extends ModelName> = (typeof Models)[T];

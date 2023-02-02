@@ -2,16 +2,17 @@ import * as aws from "@pulumi/aws";
 import * as awsnative from "@pulumi/aws-native";
 import * as pulumi from "@pulumi/pulumi";
 
-import StatusAdminUIModel from "../../src/data/models/StatusInfo";
+import { getDynamoDBModel } from "../../src/data/DataManager";
 import { transformModelToDynamoDBSchema } from "../../src/services/AWS/DynamoDB/DynamoDBORMUtils";
 import { StackConfig } from "../types";
 
 export function createDynamoDBTable(configuration: StackConfig, lambdaFunctionExecRole: awsnative.iam.Role) {
-  const modelSchema = transformModelToDynamoDBSchema(StatusAdminUIModel);
+  const dynamoDBModel = getDynamoDBModel("StatusInfo");
+  const schema = transformModelToDynamoDBSchema(dynamoDBModel);
 
   const tableInfo: any = {
-    name: StatusAdminUIModel.tableName,
-    attributes: modelSchema.AttributeDefinitions.map((ad) => {
+    name: dynamoDBModel.tableName,
+    attributes: schema.AttributeDefinitions.map((ad) => {
       return {
         name: ad.AttributeName,
         type: ad.AttributeType,
@@ -19,7 +20,7 @@ export function createDynamoDBTable(configuration: StackConfig, lambdaFunctionEx
     }),
   };
 
-  for (const keySchema of modelSchema.KeySchema) {
+  for (const keySchema of schema.KeySchema) {
     if (keySchema.KeyType === "HASH") {
       tableInfo.hashKey = keySchema.AttributeName;
     } else if (keySchema.KeyType === "RANGE") {
