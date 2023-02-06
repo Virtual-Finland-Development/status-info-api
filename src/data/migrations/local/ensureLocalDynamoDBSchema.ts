@@ -1,5 +1,5 @@
 import { putItem } from "../../../services/AWS/DynamoDB/DynamoDBORM";
-import { transformModelToDynamoDBSchema } from "../../../services/AWS/DynamoDB/DynamoDBORMUtils";
+import { pluckDynamoDBModelKeySchema } from "../../../services/AWS/DynamoDB/DynamoDBORMUtils";
 import { checkIfTableExists, createTable } from "../../../services/AWS/DynamoDB/lib/DynamoDBActions";
 import Settings from "../../../utils/Settings";
 import { getDynamoDBModel, ModelName } from "../../DataManager";
@@ -18,7 +18,7 @@ export default async function ensureLocalDynamoDBSchema() {
   };
 
   const dynamoDBModel = getDynamoDBModel("StatusInfo");
-  const schema = transformModelToDynamoDBSchema(dynamoDBModel);
+  const schema = pluckDynamoDBModelKeySchema(dynamoDBModel);
 
   if (!(await checkIfTableExists(dynamoDBModel.tableName))) {
     console.log(`Table ${dynamoDBModel.tableName} does not exist, creating it...`);

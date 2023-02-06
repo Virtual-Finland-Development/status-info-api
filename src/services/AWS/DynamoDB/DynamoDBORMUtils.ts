@@ -75,11 +75,12 @@ export async function resolveDynamoDBKey(tableName: ModelName, key: LooseDynamoD
 }
 
 /**
+ * Pick the key schema definitions that'll be used to create the table
  *
  * @param model
  * @returns
  */
-export function transformModelToDynamoDBSchema(model: DynamoDBModel): DynamoDBModel["schema"] {
+export function pluckDynamoDBModelKeySchema(model: DynamoDBModel): DynamoDBModel["schema"] {
   const {
     schema: { AttributeDefinitions, KeySchema },
   } = model;
@@ -360,7 +361,7 @@ export function resolveTableNameActual(tableName: string): string {
 
 /**
  *
- * @param type
+ * @param type text presentation of the type
  * @returns
  */
 export function transformJSTypeToDynamoDBType(type: string) {
@@ -376,6 +377,10 @@ export function transformJSTypeToDynamoDBType(type: string) {
       return "NULL";
     case "null":
       return "NULL";
+    case "object":
+      return "M";
+    case "array":
+      return "L";
     default:
       throw new Error(`Unknown type: ${columnType}`);
   }

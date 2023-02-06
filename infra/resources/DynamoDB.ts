@@ -3,12 +3,12 @@ import * as awsnative from "@pulumi/aws-native";
 import * as pulumi from "@pulumi/pulumi";
 
 import { getDynamoDBModel } from "../../src/data/DataManager";
-import { transformModelToDynamoDBSchema } from "../../src/services/AWS/DynamoDB/DynamoDBORMUtils";
+import { pluckDynamoDBModelKeySchema } from "../../src/services/AWS/DynamoDB/DynamoDBORMUtils";
 import { StackConfig } from "../types";
 
 export function createDynamoDBTable(configuration: StackConfig, lambdaFunctionExecRole: awsnative.iam.Role) {
   const dynamoDBModel = getDynamoDBModel("StatusInfo");
-  const schema = transformModelToDynamoDBSchema(dynamoDBModel);
+  const schema = pluckDynamoDBModelKeySchema(dynamoDBModel);
 
   const tableInfo: any = {
     name: dynamoDBModel.tableName,

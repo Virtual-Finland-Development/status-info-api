@@ -71,11 +71,12 @@ const DynamoDBModelGenerator: any = {
     for (const columnDefinition of columnDefinitions) {
       const { dynamodb, openapi } = columnDefinition.options;
       const columnName = columnDefinition.name;
+      // Fallback to string for unknown types as testing tool vitest does not support reflect-metadata
       const columnType = (columnDefinition.type || openapi.type || "string").toLowerCase();
 
-      const AttributeDefinition: any = {
+      const AttributeDefinition: DynamoDBModel["schema"]["AttributeDefinitions"][0] = {
         AttributeName: columnName,
-        AttributeType: transformJSTypeToDynamoDBType(columnType), // Translate to dynamodb type
+        AttributeType: transformJSTypeToDynamoDBType(columnType),
       };
 
       if (dynamodb) {
@@ -149,6 +150,7 @@ export function Table(modelName: string): ClassDecorator {
 export function Column(options: ColumnOptions): PropertyDecorator {
   return function (prototype: Object, propertyKey: string | symbol) {
     const reflectType = Reflect.getMetadata("design:type", prototype, propertyKey);
+    console.log(reflectType);
     DynamoDBModelGenerator.collector.collect("fields", {
       target: prototype.constructor,
       name: propertyKey,
