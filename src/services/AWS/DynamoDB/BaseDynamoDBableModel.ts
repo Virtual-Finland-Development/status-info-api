@@ -150,7 +150,6 @@ export function Table(modelName: string): ClassDecorator {
 export function Column(options: ColumnOptions): PropertyDecorator {
   return function (prototype: Object, propertyKey: string | symbol) {
     const reflectType = Reflect.getMetadata("design:type", prototype, propertyKey);
-    console.log(reflectType);
     DynamoDBModelGenerator.collector.collect("fields", {
       target: prototype.constructor,
       name: propertyKey,
