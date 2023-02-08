@@ -1,9 +1,8 @@
-import { checkIfTableExists, createTable } from "../../../services/AWS/DynamoDB/DynamoDBActions";
 import { putItem } from "../../../services/AWS/DynamoDB/DynamoDBORM";
-import { transformModelToDynamoDBSchema } from "../../../services/AWS/DynamoDB/DynamoDBORMUtils";
+import { pluckDynamoDBModelKeySchema } from "../../../services/AWS/DynamoDB/DynamoDBORMUtils";
+import { checkIfTableExists, createTable } from "../../../services/AWS/DynamoDB/lib/DynamoDBActions";
 import Settings from "../../../utils/Settings";
-
-import StatusInfoModel from "../../models/StatusInfo";
+import { getDynamoDBModel, ModelName } from "../../DataManager";
 
 export default async function ensureLocalDynamoDBSchema() {
   if (Settings.getStage() !== "local") {
@@ -18,14 +17,14 @@ export default async function ensureLocalDynamoDBSchema() {
     },
   };
 
-  const { tableName } = StatusInfoModel;
-  const schema = transformModelToDynamoDBSchema(StatusInfoModel);
+  const dynamoDBModel = getDynamoDBModel("StatusInfo");
+  const schema = pluckDynamoDBModelKeySchema(dynamoDBModel);
 
-  if (!(await checkIfTableExists(tableName))) {
-    console.log(`Table ${tableName} does not exist, creating it...`);
-    await createTable(tableName, { ...defaultsForLocal, ...schema });
+  if (!(await checkIfTableExists(dynamoDBModel.tableName))) {
+    console.log(`Table ${dynamoDBModel.tableName} does not exist, creating it...`);
+    await createTable(dynamoDBModel.tableName, { ...defaultsForLocal, ...schema });
     console.log("Populating table with example data...");
-    await putItem(tableName, { userId: "sdad123fsdfe", statusName: "ExampleStatus", userEmail: "test@mail.localhost" });
+    await putItem(dynamoDBModel.tableName as ModelName, { userId: "sdad123fsdfe", statusName: "ExampleStatus", userEmail: "test@mail.localhost" });
   }
 }
 

@@ -1,6 +1,6 @@
+import { ModelItem, ModelName } from "../../../data/DataManager";
 import { DatabaseError } from "../../../utils/exceptions";
-import * as Actions from "./DynamoDBActions";
-import { DDBSearchClause, LooseDynamoDBRecord, PrimitiveDynamoDBRecord } from "./DynamoDBORMTypes";
+import { DDBSearchClause, LooseDynamoDBRecord } from "./DynamoDBORMTypes";
 import {
   ensurePrimitiveDynamoDBRecord,
   parseDynamoDBInputItem,
@@ -9,6 +9,7 @@ import {
   resolveDynamoDBUpdateItem,
   resolveQueryableSearch,
 } from "./DynamoDBORMUtils";
+import * as Actions from "./lib/DynamoDBActions";
 
 /**
  *
@@ -17,11 +18,11 @@ import {
  * @param limit
  * @returns
  */
-export async function scan(tableName: string, query: DDBSearchClause = [], limit?: number): Promise<Array<PrimitiveDynamoDBRecord>> {
+export async function scan<T extends ModelName>(tableName: T, query: DDBSearchClause = [], limit?: number): Promise<Array<ModelItem<T>>> {
   const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, query);
   const items = await Actions.scan(tableName, filterExpression, expressionAttributeValues, limit);
   if (items instanceof Array) {
-    return items.map((item) => ensurePrimitiveDynamoDBRecord(item));
+    return items.map((item) => ensurePrimitiveDynamoDBRecord(item) as unknown as ModelItem<T>);
   }
   return [];
 }
@@ -33,11 +34,11 @@ export async function scan(tableName: string, query: DDBSearchClause = [], limit
  * @param limit
  * @returns
  */
-export async function query(tableName: string, searchClause: DDBSearchClause, limit?: number): Promise<Array<PrimitiveDynamoDBRecord>> {
+export async function query<T extends ModelName>(tableName: T, searchClause: DDBSearchClause, limit?: number): Promise<Array<ModelItem<T>>> {
   const { filterExpression, expressionAttributeValues } = await resolveDynamoDBSearchClause(tableName, searchClause);
   const items = await Actions.query(tableName, filterExpression, "", expressionAttributeValues);
   if (items instanceof Array) {
-    return items.map((item) => ensurePrimitiveDynamoDBRecord(item));
+    return items.map((item) => ensurePrimitiveDynamoDBRecord(item) as unknown as ModelItem<T>);
   }
   return [];
 }
@@ -48,7 +49,7 @@ export async function query(tableName: string, searchClause: DDBSearchClause, li
  * @param query
  * @returns
  */
-export async function scanOne(tableName: string, searchClause: DDBSearchClause) {
+export async function scanOne<T extends ModelName>(tableName: T, searchClause: DDBSearchClause): Promise<ModelItem<T> | null> {
   const items = await scan(tableName, searchClause, 1);
   if (items.length === 0) {
     return null;
@@ -62,7 +63,7 @@ export async function scanOne(tableName: string, searchClause: DDBSearchClause) 
  * @param query
  * @returns
  */
-export async function queryOne(tableName: string, searchClause: DDBSearchClause) {
+export async function queryOne<T extends ModelName>(tableName: T, searchClause: DDBSearchClause): Promise<ModelItem<T> | null> {
   const items = await query(tableName, searchClause, 1);
   if (items.length === 0) {
     return null;
@@ -75,7 +76,7 @@ export async function queryOne(tableName: string, searchClause: DDBSearchClause)
  * @param tableName
  * @param searchClause
  */
-export async function searchOne(tableName: string, searchClause: DDBSearchClause) {
+export async function searchOne<T extends ModelName>(tableName: T, searchClause: DDBSearchClause): Promise<ModelItem<T> | null> {
   const queryableSearch = await resolveQueryableSearch(tableName, searchClause);
   if (queryableSearch.length === 0) {
     return scanOne(tableName, searchClause);
@@ -89,7 +90,7 @@ export async function searchOne(tableName: string, searchClause: DDBSearchClause
  * @param key - { id: "bazz" } or { id: { S: "bazz" } }
  * @returns
  */
-export async function getItem(tableName: string, key: LooseDynamoDBRecord) {
+export async function getItem<T extends ModelName>(tableName: T, key: LooseDynamoDBRecord): Promise<ModelItem<T> | null> {
   let item;
   try {
     item = await Actions.getItem(tableName, await resolveDynamoDBKey(tableName, key));
@@ -99,7 +100,7 @@ export async function getItem(tableName: string, key: LooseDynamoDBRecord) {
   if (!item) {
     return null;
   }
-  return ensurePrimitiveDynamoDBRecord(item);
+  return ensurePrimitiveDynamoDBRecord(item) as unknown as ModelItem<T>;
 }
 
 /**
@@ -108,7 +109,7 @@ export async function getItem(tableName: string, key: LooseDynamoDBRecord) {
  * @param item - { id: "bazz", statusName: "buzz", statusValue: "bazz" }
  * @returns
  */
-export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
+export async function updateItem<T extends ModelName>(tableName: T, item: LooseDynamoDBRecord): Promise<ModelItem<T>> {
   try {
     // Preps
     const updateableItem = await parseDynamoDBInputItem(tableName, item, "update");
@@ -136,7 +137,7 @@ export async function updateItem(tableName: string, item: LooseDynamoDBRecord) {
  * @param items
  * @returns
  */
-export async function updateItems(tableName: string, items: LooseDynamoDBRecord[]) {
+export async function updateItems<T extends ModelName>(tableName: T, items: LooseDynamoDBRecord[]): Promise<void> {
   try {
     const updateableItems = await Promise.all(
       items.map(async (item) => {
@@ -157,14 +158,14 @@ export async function updateItems(tableName: string, items: LooseDynamoDBRecord[
  * @param tableName
  * @param item - { id: "bazz" } or { id: { S: "bazz" } }
  */
-export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
+export async function putItem<T extends ModelName>(tableName: T, item: LooseDynamoDBRecord): Promise<ModelItem<T>> {
   try {
     // Preps
     const insertableItem = await parseDynamoDBInputItem(tableName, item, "create");
 
     // Inserts
     await Actions.putItem(tableName, await resolveDynamoDBKey(tableName, insertableItem, false));
-    return insertableItem;
+    return insertableItem as any;
   } catch (error) {
     throw new DatabaseError(error);
   }
@@ -175,7 +176,7 @@ export async function putItem(tableName: string, item: LooseDynamoDBRecord) {
  * @param tableName
  * @param key - { id: "bazz" } or { id: { S: "bazz" } }
  */
-export async function deleteItem(tableName: string, key: LooseDynamoDBRecord) {
+export async function deleteItem<T extends ModelName>(tableName: T, key: LooseDynamoDBRecord): Promise<void> {
   try {
     return Actions.deleteItem(tableName, await resolveDynamoDBKey(tableName, key));
   } catch (error) {
@@ -189,7 +190,7 @@ export async function deleteItem(tableName: string, key: LooseDynamoDBRecord) {
  * @param keys
  * @returns
  */
-export async function deleteItems(tableName: string, keys: LooseDynamoDBRecord[]) {
+export async function deleteItems<T extends ModelName>(tableName: T, keys: LooseDynamoDBRecord[]): Promise<void> {
   try {
     const deletableKeys = await Promise.all(keys.map(async (key) => await resolveDynamoDBKey(tableName, key)));
     return Actions.batchDelete(tableName, deletableKeys);

@@ -14,9 +14,9 @@ import {
   TransactWriteItemsCommand,
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
+import { DynamoDBRecord } from "../DynamoDBORMTypes";
+import { resolveTableNameActual } from "../DynamoDBORMUtils";
 import { ddbDocClient } from "./DynamoDBClient";
-import { DynamoDBRecord } from "./DynamoDBORMTypes";
-import { resolveTableNameActual } from "./DynamoDBORMUtils";
 
 /**
  * @see: https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/dynamodb-example-query-scan.html

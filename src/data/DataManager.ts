@@ -1,34 +1,22 @@
 import Documentation from "../api/utils/Documentation";
 import { DynamoDBModel } from "../services/AWS/DynamoDB/DynamoDBORMTypes";
+import { default as Models } from "./models/";
 
-import { default as StatusInfo } from "./models/StatusInfo";
+export type ModelName = keyof typeof Models;
+export type ModelItem<T extends ModelName> = (typeof Models)[T];
 
-const preparedModels: any = {
-  StatusInfo: StatusInfo,
-};
-
-export async function getModel(modelName: string): Promise<DynamoDBModel> {
-  if (typeof preparedModels[modelName] !== "undefined") {
-    return preparedModels[modelName];
+export function getDynamoDBModel<T extends ModelName>(modelName: T): DynamoDBModel {
+  if (typeof Models[modelName] === "undefined") {
+    throw new Error(`Model ${modelName} not found`);
   }
-  const model = await import(`./models/${modelName}`);
-  preparedModels[modelName] = model.default;
-  return preparedModels[modelName];
-}
-
-/**
- *
- * @param modelNames
- */
-export function initialize(modelNames: Array<string> = ["StatusInfo"]) {
-  for (const modelName of modelNames) {
-    if (typeof preparedModels[modelName] !== "undefined" && preparedModels[modelName].openapi) {
-      Documentation.addSchema(modelName, preparedModels[modelName].openapi.schema);
-    }
-  }
+  return Models[modelName].getDynamoDBModel();
 }
 
 export default {
-  getModel,
-  initialize,
+  initialize() {
+    for (const key in Models) {
+      const model = getDynamoDBModel(key as ModelName);
+      Documentation.addSchema(key, model.openapi);
+    }
+  },
 };
