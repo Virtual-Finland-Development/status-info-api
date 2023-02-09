@@ -19,7 +19,19 @@ services:
       - STATUS_ADMIN_JWT_SECRET=secret
     depends_on:
       - dynamodb
+    networks:
+      - vfd-network
+
   dynamodb:
     image: amazon/dynamodb-local
     ports:
       - 8000:8000
+    networks:
+      - vfd-network
+    labels:
+      - "traefik.enable=false"
+
+networks:
+  vfd-network:
+    driver: bridge
+    external: true
