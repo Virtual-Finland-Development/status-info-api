@@ -6,7 +6,7 @@ import { createStackConfig } from "./utils";
 const stackConfig = createStackConfig({
   name: "status-info-api",
   stage: pulumi.getStack(),
-  project: "Virtual Finland",
+  project: pulumi.getProject(),
   pulumiOrganization: pulumi.getOrganization(),
 });
 
