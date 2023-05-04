@@ -57,6 +57,7 @@ export function createLambdaFunction(stackConfig: StackConfig, lambdaFunctionExe
         STATUS_ADMIN_JWT_SECRET: "secret",
       },
     },
+    tags: stackConfig.getTags(),
   });
 
   const lambdaFunctionUrl = new awsnative.lambda.Url(stackConfig.generateResourceName("lambdaFunctionUrl"), {
