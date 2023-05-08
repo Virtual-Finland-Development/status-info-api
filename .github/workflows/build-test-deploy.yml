@@ -14,6 +14,10 @@ on:
         type: string
         required: true
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build-test-deploy:
     name: Build, test and deploy ${{ inputs.environment }}
@@ -37,6 +41,21 @@ jobs:
       - name: prepare deployment
         run: |
           npm run build:infra
+      - name: Get IAM role from Pulumi
+        uses: Virtual-Finland-Development/pulumi-outputs-action@v1
+        id: infra-iam-role
+        with:
+          organization: virtualfinland
+          project: infrastructure
+          stack: ${{ inputs.environment }}
+          resource: DeployerIAMRole
+          access-token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: eu-north-1
+          role-to-assume: ${{ steps.infra-iam-role.outputs.resource-output }}
+          role-session-name: status-info-api-deploy
       - name: Deploy with Pulumi
         id: pulumi
         uses: pulumi/actions@v3
@@ -47,8 +66,6 @@ jobs:
           upsert: true
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Tag the deployment
         uses: Virtual-Finland-Development/automatic-release-action@v1.0
         if: ${{ inputs.environment == 'staging' }}
