@@ -41,14 +41,14 @@ jobs:
         run: |
           npm run build:infra
       - name: Configure AWS credentials
-        uses: Virtual-Finland-Development/infrastructure/.github/actions/configure-aws-credentials@feat/aws-credentials-github-action
+        uses: Virtual-Finland-Development/infrastructure/.github/actions/configure-aws-credentials@main
         with:
           environment: ${{ inputs.environment }}
           aws-region: ${{ secrets.AWS_REGION }}
           pulumi-access-token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
       - name: Deploy with Pulumi
         id: pulumi
-        uses: pulumi/actions@v3
+        uses: pulumi/actions@v4
         with:
           work-dir: ./infra
           command: up
