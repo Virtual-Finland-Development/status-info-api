@@ -41,7 +41,7 @@ jobs:
         run: |
           npm run build:infra
       - name: Configure AWS credentials
-        uses: Virtual-Finland-Development/infrastructure/configure-aws-credentials@feat/aws-credentials-github-action
+        uses: Virtual-Finland-Development/infrastructure/.github/actions/configure-aws-credentials@feat/aws-credentials-github-action
         with:
           environment: ${{ inputs.environment }}
           aws-region: ${{ secrets.AWS_REGION }}
