@@ -14,15 +14,14 @@ on:
         type: string
         required: true
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   build-test-deploy:
     name: Build, test and deploy ${{ inputs.environment }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
     outputs:
       url: ${{ steps.pulumi.outputs.url }}
     steps:
@@ -41,21 +40,12 @@ jobs:
       - name: prepare deployment
         run: |
           npm run build:infra
-      - name: Get IAM role from Pulumi
-        uses: Virtual-Finland-Development/pulumi-outputs-action@v1
-        id: infra-iam-role
-        with:
-          organization: virtualfinland
-          project: infrastructure
-          stack: ${{ inputs.environment }}
-          resource: DeployerIAMRole
-          access-token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: Virtual-Finland-Development/infrastructure/configure-aws-credentials@feat/aws-credentials-github-action
         with:
-          aws-region: eu-north-1
-          role-to-assume: ${{ steps.infra-iam-role.outputs.resource-output }}
-          role-session-name: status-info-api-deploy
+          environment: ${{ inputs.environment }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          pulumi-access-token: ${{ secrets.PULUMI_ACCESS_TOKEN }}
       - name: Deploy with Pulumi
         id: pulumi
         uses: pulumi/actions@v3
