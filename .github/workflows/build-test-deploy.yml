@@ -21,7 +21,7 @@ jobs:
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
-      contents: read
+      contents: write
     outputs:
       url: ${{ steps.pulumi.outputs.url }}
     steps:
